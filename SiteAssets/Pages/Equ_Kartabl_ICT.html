@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!--font-awesome-->
+  
+
+
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.custom.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.metro.BlueMetro.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.default.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.rtl.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://portal.golrang.com/SiteAssets/JS/kendo.all.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://portal.golrang.com/SiteAssets/JS/kendo.web.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://portal.golrang.com/SiteAssets/JS/kendo.core.min.js" type="text/javascript" language="javascript"></script>
+
+    <!--pnp-->
+
+    <script src="https://portal.golrang.com/SiteAssets/JS/pnp.min.js" type="text/javascript"></script>
+    <script src="https://portal.golrang.com/SiteAssets/JS/pnp.js" type="text/javascript"></script>
+
+
+    <script src="https://portal.golrang.com/ictrequests/SiteAssets/JS/Equ_Kartabl_ICT.js" type="text/javascript"
+        language="javascript"></script>
+
+
+
+    <title>کارتایل تهیه کالا</title>
+    <!---->
+    <style>
+        #window table td{/*border:1px solid black;*/padding: 10px}
+    .onvan{font-weight: bold;}
+    .k-gantt-toolbar .k-state-default, .k-grid .k-grouping-header, .k-grid-header, .k-grid-header-wrap, .k-grouping-header .k-group-indicator, .k-header, .k-pager-wrap, .k-pager-wrap .k-link, .k-pager-wrap .k-textbox {
+    background-color:thistle;
+    text-align: center!important;
+}
+.k-grid-header  {
+     padding-right: 0px !important; 
+}
+
+th[role="columnheader"]{
+    text-align: right !important ;
+}
+    </style>
+
+</head>
+
+<body>
+<div>
+    <p>لیست کالاهای درخواستی کاربران</p>
+</div>
+    <br />
+    <div>
+        <div id="Grid1"></div>
+    </div>
+    <div style="text-align: center;margin: 10px;">
+        <button style="background-color: #693a69!important; border-radius: 17px;" onclick="checkedDone()" type="button" class="btn btn-success">ثبت</button>
+    </div>
+    <!--Window-->
+
+    <div id="example">
+        <div id="window" style="display:none">
+            <table>
+                <tr>
+                    <td class="onvan">پرسنلی</td>
+                    <td id="PersonelId"></td>
+                </tr>
+                <tr>
+                    <td class="onvan">نام کالا</td>
+                    <td id="NameKala"></td>
+                </tr>
+                <tr>
+                    <td class="onvan">واحد</td>
+                    <td id="Departman"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+
+
+</body>
+
+</html>
