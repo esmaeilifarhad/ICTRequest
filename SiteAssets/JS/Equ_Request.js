@@ -7,6 +7,7 @@ var CurrentPLoginName = ""
 var _PersonelInfo;
 var _IctKalaFilter;
 var CurrentSematId;
+var today="";
 
 var _DetailsObjects = []
 /*
@@ -122,7 +123,7 @@ async function save() {
 async function addDetail() {
     
     const m = moment();
-    var today = moment().format('jYYYY/jM/jD');//Today
+     today = moment().format('jYYYY/jM/jD');//Today
     // console.log(pdpDark);
     // console.log(today);
   
@@ -142,18 +143,9 @@ async function addDetail() {
   
 
 
-/*
-    var res = _DetailsObjects.find(x => x.pdpDark === pdpDark);
-    if (res != undefined) {
-        showMessage("درخواست تکراری نمیتوان ثبت کرد")
-        return;
-    }
-    */
-
     $("#message p").remove();
    
     _DetailsObjects.push({ ID: _Id, KalaId: KalaId, KalaText: KalaText, description: description })
-    debugger
     var table = ""
     table += "<tr Data_Id=" + _Id + ">"
     table += "<td col='pdpDark'>"
@@ -185,8 +177,8 @@ async function ShowIndividualprofile() {
     $("#Kala").append(selectOption)
 
   
-    console.log(_PersonelInfo.PersonelInfo)
-    console.log(_PersonelInfo.PersonelInfo.Gender)
+    //console.log(_PersonelInfo.PersonelInfo)
+   // console.log(_PersonelInfo.PersonelInfo.Gender)
    
     $("#NameUser").next().remove();
     $("#PID").next().remove();
@@ -217,6 +209,7 @@ function CreateGIG_equ_Request() {
             RR_ID:CurrentSematId,
             Title: CurrentName,
             PersonelId: CurrentPID,
+            RequestDate:today,
             // Description: description,
             UserId: sessionStorage.getItem("UID"),
             DepName: CurrentDep,
@@ -231,10 +224,12 @@ function CreateGIG_equ_Request() {
     });
 }
 function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
+    debugger
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").items.add({
             Title: CurrentName,
             StatusWF: "درگردش",
+            NameKala:GIG_equ_Details.KalaId+";#"+GIG_equ_Details.KalaText,
             NameKalaValue:GIG_equ_Details.KalaId,
            // Date: GIG_MTH_Details.pdpDark,
             Tozihat: GIG_equ_Details.description,
@@ -324,7 +319,6 @@ function splitString(str) {
 }
 /*
 Pass you dates to this function like this:  showDays('1/1/2014','12/25/2014')
-
 پارامتر وردی تابع شمسی میباشد
 1367/07/09
 */
