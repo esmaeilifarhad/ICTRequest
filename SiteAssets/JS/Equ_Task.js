@@ -14,6 +14,7 @@ List Name :
 GIG_equ_Details
 GIG_equ_Request 
 GIG_Equ_Confirm 
+GIG_Equ_Log
 */
 $(document).ready(function () {
     //-----npm initial header Request
@@ -112,7 +113,7 @@ async function showCartabl() {
 //-------------------------------------------------------
 
 function Get_Details(usersInConfirm) {
-   // debugger
+    // debugger
     return new Promise(resolve => {
         var filter = ""
         var filterStatusWF = ""
@@ -155,6 +156,26 @@ function Get_Details(usersInConfirm) {
             });
     });
 }
+function Create_Log(Detail,confirm) {
+    
+    debugger
+    /*
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.getByTitle("GIG_Equ_Log").items.add({
+            Result:CurrentSematId,
+            Title: CurrentName,
+            Dsc: CurrentPID,
+            DateConfirm:today,
+            DetailIdId: sessionStorage.getItem("UID")
+
+            
+        }).then(function (item) {
+            resolve(item);
+        });
+        
+    });
+    */
+}
 function Get_DetailsById(id) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
@@ -182,13 +203,13 @@ function Get_Confirm() {
             });
     });
 }
-function Get_ConfirmByStep(step,CID) {
+function Get_ConfirmByStep(step, CID) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.
             getByTitle("GIG_Equ_Confirm").
             items.select().
             // expand("MasterId").
-            filter("(Step eq "+step+") and (CompanyId eq "+CID+")").
+            filter("(Step eq " + step + ") and (CompanyId eq " + CID + ")").
             // orderBy("Modified", true).
             get().
             then(function (items) {
@@ -222,22 +243,23 @@ function getCurrentUserinGroups() {
     })
 }
 async function update_Details(_CurrentIdDetail, result, description, actionUser, Detail) {
-    var StatusWF =Detail.StatusWF
+    var StatusWF = Detail.StatusWF
     var varStep = Detail.step
+    var DarkhastSN = Detail.DarkhastSN
 
-    var confirm=await Get_ConfirmByStep(Detail.step,Detail.MasterId.CID)
-    confirm.Role
-    confirm.IsFinish
+    var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
+
+    var Detail = await Create_Log(Detail,confirm)
+
     if (result == "تایید") {
-        if(confirm[0].IsFinish==true)
-        {
+        if (confirm[0].IsFinish == true) {
             StatusWF = "خاتمه یافته"
             varStep = Detail.step + 1
+            var DarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail);
         }
-        else
-        {
+        else {
             varStep = Detail.step + 1
-        } 
+        }
     }
     else if (result == "عدم تایید") {
         // StatusWF = "تایید نشده"
@@ -252,7 +274,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
         StatusWF = "تایید نشده";
     }
     else {
-      //  StatusWF = "درگردش";
+        //  StatusWF = "درگردش";
     }
 
     return new Promise(resolve => {
@@ -260,6 +282,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
         list.items.getById(_CurrentIdDetail).update({
             step: varStep,
             StatusWF: StatusWF,
+            DarkhastSN: DarkhastSN
         }).then(function (item) {
             resolve(item)
 
@@ -342,6 +365,9 @@ async function save() {
         var Detail = await Get_DetailsById(_CurrentIdDetail)
         var DetailRes = await update_Details(_CurrentIdDetail, result, description, actionUser, Detail)
 
+        // var res=await serviceICTRequestTadarokat("980905","254");
+
+
         showCartabl();
         $("#window").data("kendoWindow").close();
         $.LoadingOverlay("hide");
@@ -366,39 +392,38 @@ async function selectAllchk(s) {
 
 }
 async function Show(id) {
-    debugger
+
     _CurrentIdDetail = id
     var Detail = await Get_DetailsById(id)
-    var confirm=await Get_ConfirmByStep(Detail.step,Detail.MasterId.CID)
+    var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
 
 
-    $("#PersonelId span").remove();
-    $("#NamePersonel span").remove();
-    $("#DepName span").remove();
-    $("#RequestDate span").remove();
-    $("#Tozihat span").remove();
-    $("#NameKala span").remove();
+    $(".PersonelId span").remove();
+    $(".NamePersonel span").remove();
+    $(".DepName span").remove();
+    $(".RequestDate span").remove();
+    $(".Tozihat span").remove();
+    $(".NameKala span").remove();
 
 
-    $("#PersonelId").append("<span>" + Detail.MasterId.PersonelId + "</span>");
-    $("#NamePersonel").append("<span>" + Detail.MasterId.Title + "</span>");
-    $("#DepName").append("<span>" + Detail.MasterId.DepName + "</span>");
-    $("#RequestDate").append("<span>" + foramtDate(Detail.MasterId.RequestDate) + " " + calDayOfWeek(foramtDate(Detail.MasterId.RequestDate)) + "</span>");
-    $("#Tozihat").append("<span>" + Detail.Tozihat + "</span>");
-    $("#NameKala").append("<span>" + splitString(Detail.NameKala)[1] + "</span>");
+    $(".PersonelId").append("<span>" + Detail.MasterId.PersonelId + "</span>");
+    $(".NamePersonel").append("<span>" + Detail.MasterId.Title + "</span>");
+    $(".DepName").append("<span>" + Detail.MasterId.DepName + "</span>");
+    $(".RequestDate").append("<span>" + foramtDate(Detail.MasterId.RequestDate) + " " + calDayOfWeek(foramtDate(Detail.MasterId.RequestDate)) + "</span>");
+    $(".Tozihat").append("<span>" + Detail.Tozihat + "</span>");
+    $(".NameKala").append("<span>" + splitString(Detail.NameKala)[1] + "</span>");
 
-    if(confirm.Role=="ICT")
-    {
 
+    if (confirm[0].Role == "ICT") {
+        showWindowsICT()
     }
-    else
-    {
+    else {
         showWindows();
     }
-   
-}
-function showWindows() {
 
+}
+//----------------------------Modal Dialog Form
+function showWindows() {
     var myWindow = $("#window"),
         undo = $("#newRecord");
     myWindow.kendoWindow({
@@ -416,7 +441,57 @@ function showWindows() {
         }
     }).data("kendoWindow").center().open();
 }
-//--------------------------
+function showWindowsICT() {
+    var myWindow = $("#windowICT"),
+        undo = $("#newRecord");
+    myWindow.kendoWindow({
+        width: "1200px",
+        title: "فرم تایید کالا",
+        visible: false,
+        actions: [
+            // "Pin",
+            // "Minimize",
+            //"Maximize",
+            "Close"
+        ],
+        close: function () {
+            undo.fadeIn();
+        }
+    }).data("kendoWindow").center().open();
+}
+//-------------------------------------------web services
+//header master
+function serviceICTRequestTadarokat(myDate, PortalReqHeaderID) {
+    debugger
+    return new Promise(resolve => {
+        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ICTRequestTadarokat"
+        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID }
+        // {"CID":"50","Date":"980919","PortalReqHeaderID":"984"}
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            contentType: "application/json; charset=utf-8",
+            xhrFields: {
+                'withCredentials': true
+            },
+            dataType: "json",
+            data: JSON.stringify(request),
+            //processData: false,
+            success: function (data) {
+                if ($.isNumeric(data)) {
+                    resolve(data);
+                }
+                else {
+                    alert(data)
+                }
+            },
+            error: function (a) {
+                console.log(a);
+            }
+        });
+    })
+}
+//-----------------------------Utility
 function calDayOfWeek(date) {
     var mounth = ""
     var rooz = ""

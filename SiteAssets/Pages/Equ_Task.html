@@ -98,7 +98,7 @@
 
 
         </div>
-
+        <!-- others -->
         <div id="example">
             <div id="window" style="display:none">
                 <div class="row">
@@ -110,32 +110,32 @@
                         <table class="table">
                             <tr>
                                 <td class="onvan">واحد</td>
-                                <td id="DepName"></td>
+                                <td class="DepName"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">کد پرسنلی</td>
-                                <td id="PersonelId"></td>
+                                <td class="PersonelId"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">نام</td>
-                                <td id="NamePersonel"></td>
+                                <td class="NamePersonel"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">کالا</td>
-                                <td id="NameKala"></td>
+                                <td class="NameKala"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">تاریخ درخواست</td>
-                                <td id="RequestDate"></td>
+                                <td class="RequestDate"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">توضیحات درخواست</td>
-                                <td id="Tozihat"></td>
+                                <td class="Tozihat"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">توضیحات</td>
                                 <td>
-                                    <textarea id="description" name="comment" form="usrform"
+                                    <textarea class="description" name="comment" form="usrform"
                                         placeholder="توضیحات ..."></textarea>
                                 </td>
                             </tr>
@@ -147,7 +147,7 @@
 
                             <tr>
                                 <td colspan="2">
-                                    <button id="btnSave"
+                                    <button class="btnSave"
                                         style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
                                         onclick="save()" type="button" class="btn btn-success">ذخیره
                                     </button>
@@ -158,7 +158,7 @@
                         <!-- <table>
                             <tr>
                                 <td>
-                                    <button id="btnSave"
+                                    <button class="btnSave"
                                         style="background-color:rgb(179, 119, 42)!important; border-radius: 17px;"
                                         onclick="save()" type="button" class="btn btn-success">ذخیره
                                     </button>
@@ -166,6 +166,69 @@
                             </tr>
 
                         </table> -->
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- ICT -->
+        <div id="exampleICT">
+            <div id="windowICT" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#dedbd2;">
+                        <br>
+                        <div id="FolderLog"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
                     </div>
 
                 </div>
