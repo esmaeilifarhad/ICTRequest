@@ -102,7 +102,7 @@
         <div id="example">
             <div id="window" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#dedbd2;">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
                         <br>
                         <div id="FolderLog"></div>
                     </div>
@@ -170,7 +170,7 @@
         <div id="exampleICT">
             <div id="windowICT" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#dedbd2;">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
                         <br>
                         <div id="FolderLogICT"></div>
                     </div>
@@ -253,7 +253,7 @@
         <div id="exampleJAM">
             <div id="windowJAM" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#dedbd2;">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
                         <br>
                         <div id="FolderLogJAM"></div>
                     </div>
@@ -289,6 +289,10 @@
                                 <td class="Tozihat"></td>
                             </tr>
                             <tr>
+                                    <td class="onvan">تخصیص اموال کاربر</td>
+                                    <td class="AmvalPersonel"></td>
+                                </tr>
+                            <tr>
                                 <td class="onvan">توضیحات</td>
                                 <td>
                                     <textarea class="description" name="comment" form="usrform"
@@ -316,6 +320,89 @@
 
             </div>
         </div>
+        <!-- AML -->
+        <div id="exampleAML">
+                <div id="windowAML" style="display:none">
+                    <div class="row">
+                        <div class="col-sm-6" style="background-color:#eac0c8;">
+                            <br>
+                            <div id="FolderLogAML"></div>
+                        </div>
+                        <div class="col-sm-5" style="background-color:#a2c4dc;">
+                            <table class="table">
+                                <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                    <td class="onvan">مسئول</td>
+                                    <td class="Confirm"></td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">واحد</td>
+                                    <td class="DepName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">کد پرسنلی</td>
+                                    <td class="PersonelId"></td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">نام</td>
+                                    <td class="NamePersonel"></td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">کالا</td>
+                                    <td class="NameKala"></td>
+                                </tr>
+    
+                                <tr>
+                                    <td class="onvan">تاریخ درخواست</td>
+                                    <td class="RequestDate"></td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">توضیحات درخواست</td>
+                                    <td class="Tozihat"></td>
+                                </tr>
+                                <tr style="color: red">
+                                    <td class="onvan">محدوده قیمت</td>
+                                    <td class="Price"></td>
+                                </tr>
+    
+    
+                                <tr style="color: red">
+                                    <td class="onvan">قیمت فعلی کالا</td>
+                                    <td class="EstelamGheymated"></td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">درخواست از انبار\خرید</td>
+                                    <td><input type="radio" name="BuyStock" value="2" />انبار
+                                        <input type="radio" name="BuyStock" value="1" />خرید</td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">توضیحات</td>
+                                    <td>
+                                        <textarea class="description" name="comment" form="usrform"
+                                            placeholder="توضیحات ..."></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="onvan">نتیجه</td>
+                                    <td><input type="radio" name="decide" value="تایید" />تایید
+                                        <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                                </tr>
+    
+                                <tr>
+                                    <td colspan="2">
+                                        <button class="btnSave"
+                                            style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                            onclick="save()" type="button" class="btn btn-success">ذخیره
+                                        </button>
+                                    </td>
+                                </tr>
+    
+                            </table>
+                        </div>
+    
+                    </div>
+    
+                </div>
+            </div>
 
 </body>
 

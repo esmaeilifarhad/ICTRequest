@@ -24,6 +24,9 @@ button{
 #FolderLogJAM th,td{
   text-align: right
 }
+#FolderLogAML th,td{
+  text-align: right
+}
  #tableres2 th {
     text-align: right
 }

@@ -44,6 +44,7 @@ $(document).ready(function () {
     year = todayarray[0].substring(2, 4)
     today = year + "" + mounth + "" + rooz
 
+   
     showCartabl();
 
 });
@@ -73,7 +74,7 @@ async function showCartabl() {
     //---------------------
 
     if (Details == "null") {
-        $("#tableres2 table").append("<tr class='rowData'><td colspan=9>موردی برای مشاهده وجود ندارد</td></tr>");
+        $("#tableres2 table").append("<tr class='rowData'><td colspan=10>موردی برای مشاهده وجود ندارد</td></tr>");
     }
     else {
         var table = ""
@@ -120,19 +121,15 @@ async function showCartabl() {
 //-------------------------------------------------------
 
 function Get_Details(usersInConfirm) {
-    // debugger
     return new Promise(resolve => {
         var filter = ""
         var filterStatusWF = ""
-        if (usersInConfirm.length == 0) {
-            resolve("null");
-            return
-        }
-        // else if (filterGIG_MTH_Details == "admin") {
-        //     filterStatusWF = "(StatusWF eq 'درگردش')";
+        var filterMyRequester=""
+        // if (usersInConfirm.length == 0) {
+        //     resolve("null");
+        //     return
         // }
-
-        else {
+      //  else {
             for (let index = 0; index < usersInConfirm.length; index++) {
                 if (usersInConfirm[index].Step == 1) {
                     filter += "((MasterId/DepId eq " + usersInConfirm[index].DepId + ") and (step eq " + usersInConfirm[index].Step + ")) or ";
@@ -142,13 +139,26 @@ function Get_Details(usersInConfirm) {
                 }
             }
 
+            if(filter.length!=0)
+            {
             filter = "(" + filter.substring(0, filter.length - 4) + ")";
-            filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filter
-        }
-        //console.log(filterStatusWF);
+            }
+            filterMyRequester="((AuthorId eq "+_spPageContextInfo.userId+") and (Role eq 'REQ'))"
+            if(filter.length!=0)
+            {
+                filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filter
+            }
+            else
+            {
+                filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filterMyRequester
+            }
+           
+       // }
+     
+       // console.log(filterStatusWF);
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("MasterId/Id,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
+            items.select("MasterId/Id,MasterId/Semat,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
             expand("MasterId").
             // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
             filter(filterStatusWF).
@@ -233,7 +243,7 @@ function Get_DetailsById(id) {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
             items.
             getById(id).
-            select("MasterId/Id,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,StatusWF,NameKala,EstelamGheymat").
+            select("MasterId/Id,MasterId/Semat,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,StatusWF,NameKala,EstelamGheymat").
             expand("MasterId").
             get().
             then(function (item) {
@@ -276,8 +286,17 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
 
 
     var Policy = await Get_Policy(Detail)
+
+    if(Policy.length==0 && Confirm[0].Role == "ICT"){
+        alert("لطفا برای کالا "+splitString(Detail.NameKala)[1]+" و سمت "+Detail.MasterId.Semat+" محدوده قیمت مشخص نمایید")
+        $.LoadingOverlay("hide");
+        return;
+    }
+    if(Policy.length>0)
+    {
     var PriceKala = _exchangeRate * Policy[0].Price
-    debugger
+    }
+ 
     if (result == "تایید") {
         if (Confirm[0].Role == "ICT") {
             if (parseInt(EstelamGheymat) > PriceKala) {
@@ -319,6 +338,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
     }
     else {
         alert("call to IT")
+        return;
     }
 
 
@@ -328,7 +348,10 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
     else {
         //  StatusWF = "درگردش";
     }
-
+debugger
+    /*پیدا کردن تایید کننده بعدی */
+    var nextConfirm = await Get_ConfirmByStep(varStep, Detail.MasterId.CID)
+    debugger
     var Log = await Create_Log(Detail, Confirm, result, description)
     return new Promise(resolve => {
         var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");
@@ -336,7 +359,8 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
             step: varStep,
             StatusWF: StatusWF,
             DarkhastSN: DarkhastSN,
-            EstelamGheymat: EstelamGheymat
+            EstelamGheymat: EstelamGheymat,
+            Role:nextConfirm[0].Role
         }).then(function (item) {
             resolve(item)
 
@@ -401,24 +425,28 @@ async function save() {
     var description = ""
     description += $("#windowICT .table .description").val();
     description += $("#window .table .description").val()
+    description += $("#windowJAM .table .description").val()
+    description += $("#windowAML .table .description").val()
 
     var result = $("input[name='decide']:checked").val()
     var actionUser = _spPageContextInfo.userId;
     var EstelamGheymat = $("#EstelamGheymat").val()
 
+    var Detail = await Get_DetailsById(_CurrentIdDetail)
+    var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
 
-    if (result == undefined) {
+    if (result == undefined && confirm[0].Role != "JAM") {
         alert("لطفا نتیجه را مشخص نمایید");
         return
     }
     else {
         $.LoadingOverlay("show");
-
-        var Detail = await Get_DetailsById(_CurrentIdDetail)
         if (EstelamGheymat == null || EstelamGheymat == "") {
             EstelamGheymat = Detail.EstelamGheymat
         }
-        var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
+        if(confirm[0].Role == "JAM"){
+            result="تایید" 
+        }
         var DetailRes = await update_Details(_CurrentIdDetail, result, description, actionUser, Detail, confirm, EstelamGheymat)
 
         // var res=await serviceICTRequestTadarokat("980905","254");
@@ -429,6 +457,9 @@ async function save() {
         }
         else if(confirm[0].Role == "JAM"){
             $("#windowJAM").data("kendoWindow").close();
+        }
+        else if(confirm[0].Role == "AML"){
+            $("#windowAML").data("kendoWindow").close();
         }
         else {
             $("#window").data("kendoWindow").close();
@@ -455,6 +486,7 @@ async function selectAllchk(s) {
 
 }
 async function Show(id) {
+  
     _CurrentIdDetail = id
     var Detail = await Get_DetailsById(id)
     var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
@@ -477,10 +509,12 @@ async function Show(id) {
     $("#FolderLog table").remove();
     $("#FolderLogICT table").remove();
     $("#FolderLogJAM table").remove();
+    $("#FolderLogAML table").remove();
 
     $("#FolderLog").append(table);
     $("#FolderLogICT").append(table);
     $("#FolderLogJAM").append(table);
+    $("#FolderLogAML").append(table);
 
     $(".Price span").remove();
     $(".Confirm span").remove();
@@ -490,10 +524,16 @@ async function Show(id) {
     $(".RequestDate span").remove();
     $(".Tozihat span").remove();
     $(".NameKala span").remove();
+    $(".EstelamGheymated span").remove();
 
 
     $("#EstelamGheymat").val(Detail.EstelamGheymat);
+    if(Policy.length>0)
+    {
     $(".Price").append("<span>" + SeparateThreeDigits(parseInt(GenLookUp.value) * parseInt(Policy[0].Price)) + "</span>");
+    }
+    
+    $(".EstelamGheymated").append("<span>" + SeparateThreeDigits(Detail.EstelamGheymat) + "</span>");
     $(".Confirm").append("<span>" + confirm[0].Title + "</span>");
     $(".PersonelId").append("<span>" + Detail.MasterId.PersonelId + "</span>");
     $(".NamePersonel").append("<span>" + Detail.MasterId.Title + "</span>");
@@ -506,8 +546,19 @@ async function Show(id) {
     if (confirm[0].Role == "ICT") {
         showWindowsICT()
     }
-    if (confirm[0].Role == "JAM") {
+    else if (confirm[0].Role == "JAM") {
+        var ShowAmvalPersonel = await  serviceShowAmvalPersonel();
+        var AmvalPersonelSelect="<select>"
+        for (let index = 0; index < ShowAmvalPersonel.length; index++) {
+            AmvalPersonelSelect+="<option>"+ShowAmvalPersonel[index].MoshakhasatKala+" - "+ShowAmvalPersonel[index].PlackNo+"</option>"          
+        }
+        AmvalPersonelSelect+="</select>"
+        $(".AmvalPersonel").append(AmvalPersonelSelect);
+        debugger
         showWindowsJAM()
+    }
+    else if (confirm[0].Role == "AML") {
+        showWindowsAML()
     }
     else {
         showWindows();
@@ -569,8 +620,26 @@ function showWindowsJAM() {
         }
     }).data("kendoWindow").center().open();
 }
+function showWindowsAML() {
+    var myWindow = $("#windowAML"),
+        undo = $("#newRecord");
+    myWindow.kendoWindow({
+        width: "1200px",
+        title: "فرم تایید کالا",
+        visible: false,
+        actions: [
+            // "Pin",
+            // "Minimize",
+            //"Maximize",
+            "Close"
+        ],
+        close: function () {
+            undo.fadeIn();
+        }
+    }).data("kendoWindow").center().open();
+}
 //-------------------------------------------web services
-//header master
+//create record header master in Tadarokat
 function serviceICTRequestTadarokat(myDate, PortalReqHeaderID) {
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ICTRequestTadarokat"
@@ -602,6 +671,33 @@ function serviceICTRequestTadarokat(myDate, PortalReqHeaderID) {
         });
     })
 }
+//show amval personel
+function serviceShowAmvalPersonel() {
+    return new Promise(resolve => {
+        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ShowAmvalPersonel"
+        var request = { CID: CurrentCID, PID: CurrentPID }
+        // {"CID":"50","Date":"980919","PortalReqHeaderID":"984"}
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            contentType: "application/json; charset=utf-8",
+            xhrFields: {
+                'withCredentials': true
+            },
+            dataType: "json",
+            data: JSON.stringify(request),
+            //processData: false,
+            success: function (data) {
+                    resolve(data);
+
+            },
+            error: function (a) {
+                console.log(a);
+            }
+        });
+    })
+}
+
 //-----------------------------Utility
 function calDayOfWeek(date) {
     var mounth = ""

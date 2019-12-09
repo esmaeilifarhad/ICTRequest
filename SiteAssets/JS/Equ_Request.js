@@ -166,6 +166,7 @@ async function addDetail() {
 async function ShowIndividualprofile() {
 
     _PersonelInfo = await servicePersonelInfo();
+   
     CurrentSematId=_PersonelInfo.PersonelInfo.SematId;
     _IctKalaFilter= await serviceIctKalaFilter();
 
@@ -196,7 +197,7 @@ async function ShowIndividualprofile() {
 
 }
 function showMessage(message) {
-    debugger
+  
     $("#message p").remove()
     $("#message a").remove()
     // setTimeout(function () { $("#message p").remove() }, 5000);
@@ -204,9 +205,11 @@ function showMessage(message) {
 }
 //-------------------------------------------------------
 function CreateGIG_equ_Request() {
+    debugger
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Request").items.add({
             RR_ID:CurrentSematId,
+            Semat:_PersonelInfo.PersonelInfo.Semat,
             Title: CurrentName,
             PersonelId: CurrentPID,
             RequestDate:today,
@@ -224,14 +227,13 @@ function CreateGIG_equ_Request() {
     });
 }
 function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
-    debugger
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").items.add({
             Title: CurrentName,
             StatusWF: "درگردش",
             NameKala:GIG_equ_Details.KalaId+";#"+GIG_equ_Details.KalaText,
             NameKalaValue:GIG_equ_Details.KalaId,
-           // Date: GIG_MTH_Details.pdpDark,
+           // Semat: GIG_MTH_Details.pdpDark,
             Tozihat: GIG_equ_Details.description,
             MasterIdId: GIG_equ_Request.data.Id,
             step: 1
@@ -283,7 +285,6 @@ function servicePersonelInfo() {
     })
 }
 function serviceIctKalaFilter() {
-  debugger
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ictkalafilter";
         var request = { CID: CurrentCID,Semat:CurrentSematId }
@@ -298,7 +299,6 @@ function serviceIctKalaFilter() {
             data: JSON.stringify(request),
             //processData: false,
             success: function (data) {
-             debugger
                 resolve(data);
                 // console.log(data);
 
