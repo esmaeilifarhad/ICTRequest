@@ -108,6 +108,10 @@
                     </div>
                     <div class="col-sm-5" style="background-color:#a2c4dc;">
                         <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
                             <tr>
                                 <td class="onvan">واحد</td>
                                 <td class="DepName"></td>
@@ -155,17 +159,7 @@
                             </tr>
 
                         </table>
-                        <!-- <table>
-                            <tr>
-                                <td>
-                                    <button class="btnSave"
-                                        style="background-color:rgb(179, 119, 42)!important; border-radius: 17px;"
-                                        onclick="save()" type="button" class="btn btn-success">ذخیره
-                                    </button>
-                                </td>
-                            </tr>
 
-                        </table> -->
                     </div>
 
                 </div>
@@ -178,10 +172,14 @@
                 <div class="row">
                     <div class="col-sm-6" style="background-color:#dedbd2;">
                         <br>
-                        <div id="FolderLog"></div>
+                        <div id="FolderLogICT"></div>
                     </div>
                     <div class="col-sm-5" style="background-color:#a2c4dc;">
                         <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
                             <tr>
                                 <td class="onvan">واحد</td>
                                 <td class="DepName"></td>
@@ -198,6 +196,90 @@
                                 <td class="onvan">کالا</td>
                                 <td class="NameKala"></td>
                             </tr>
+
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr style="color: red">
+                                <td class="onvan">محدوده قیمت</td>
+                                <td class="Price"></td>
+                            </tr>
+
+
+                            <tr>
+                                <td class="onvan">قیمت کالا</td>
+                                <td class="EstelamGheymat"><input id="EstelamGheymat" type="text" /></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">درخواست از انبار\خرید</td>
+                                <td><input type="radio" name="BuyStock" value="2" />انبار
+                                    <input type="radio" name="BuyStock" value="1" />خرید</td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- JAM -->
+        <div id="exampleJAM">
+            <div id="windowJAM" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#dedbd2;">
+                        <br>
+                        <div id="FolderLogJAM"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+
                             <tr>
                                 <td class="onvan">تاریخ درخواست</td>
                                 <td class="RequestDate"></td>
@@ -213,12 +295,11 @@
                                         placeholder="توضیحات ..."></textarea>
                                 </td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td class="onvan">نتیجه</td>
                                 <td><input type="radio" name="decide" value="تایید" />تایید
                                     <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
-                            </tr>
-
+                            </tr> -->
                             <tr>
                                 <td colspan="2">
                                     <button class="btnSave"

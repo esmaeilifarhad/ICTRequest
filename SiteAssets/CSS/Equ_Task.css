@@ -15,6 +15,15 @@ button{
   background-color: #ce4415!important
 }
 */
+#FolderLog th,td{
+  text-align: right
+}
+#FolderLogICT th,td{
+  text-align: right
+}
+#FolderLogJAM th,td{
+  text-align: right
+}
  #tableres2 th {
     text-align: right
 }
