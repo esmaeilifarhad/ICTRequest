@@ -44,7 +44,7 @@ $(document).ready(function () {
     year = todayarray[0].substring(2, 4)
     today = year + "" + mounth + "" + rooz
 
-   
+
     showCartabl();
 
 });
@@ -108,9 +108,9 @@ async function showCartabl() {
             table += "<td >"
             table += "<input value='نمایش' type=button style='background-color: #97161b!important;' onclick='Show(" + Details[index].ID + ")'></input>"
             table += "</td>"
-            table += "<td>"
-            table += "<input type=checkbox Data_Id=" + Details[index].ID + " />"
-            table += "</td>"
+            // table += "<td>"
+            // table += "<input type=checkbox Data_Id=" + Details[index].ID + " />"
+            // table += "</td>"
             // table += "<td col='remove'><span style='color:mediumvioletred' class='fa fa-remove RemoveWord pointer' onclick='removeRow(this," + _Id + ")'></span></td>"
             table += "</tr>"
         }
@@ -118,47 +118,44 @@ async function showCartabl() {
     }
 
 }
-//-------------------------------------------------------
+//-------------------------------------------------------CRUD
 
 function Get_Details(usersInConfirm) {
     return new Promise(resolve => {
         var filter = ""
         var filterStatusWF = ""
-        var filterMyRequester=""
+        var filterMyRequester = ""
         // if (usersInConfirm.length == 0) {
         //     resolve("null");
         //     return
         // }
-      //  else {
-            for (let index = 0; index < usersInConfirm.length; index++) {
-                if (usersInConfirm[index].Step == 1) {
-                    filter += "((MasterId/DepId eq " + usersInConfirm[index].DepId + ") and (step eq " + usersInConfirm[index].Step + ")) or ";
-                }
-                else {
-                    filter += "((step eq " + usersInConfirm[index].Step + ")) or ";
-                }
+        //  else {
+        for (let index = 0; index < usersInConfirm.length; index++) {
+            if (usersInConfirm[index].Step == 1) {
+                filter += "((MasterId/DepId eq " + usersInConfirm[index].DepId + ") and (step eq " + usersInConfirm[index].Step + ")) or ";
             }
+            else {
+                filter += "((step eq " + usersInConfirm[index].Step + ")) or ";
+            }
+        }
 
-            if(filter.length!=0)
-            {
+        if (filter.length != 0) {
             filter = "(" + filter.substring(0, filter.length - 4) + ")";
-            }
-            filterMyRequester="((AuthorId eq "+_spPageContextInfo.userId+") and (Role eq 'REQ'))"
-            if(filter.length!=0)
-            {
-                filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filter
-            }
-            else
-            {
-                filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filterMyRequester
-            }
-           
-       // }
-     
-       // console.log(filterStatusWF);
+        }
+        filterMyRequester = "((AuthorId eq " + _spPageContextInfo.userId + ") and (Role eq 'REQ'))"
+        if (filter.length != 0) {
+            filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filter + " or " + filterMyRequester
+        }
+        else {
+            filterStatusWF = "(StatusWF eq 'درگردش')" + " and " + filterMyRequester
+        }
+
+        // }
+
+        console.log(filterStatusWF);
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("MasterId/Id,MasterId/Semat,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
+            items.select("MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
             expand("MasterId").
             // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
             filter(filterStatusWF).
@@ -173,6 +170,19 @@ function Get_Details(usersInConfirm) {
             });
     });
 }
+function Get_DetailsById(id) {
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
+            items.
+            getById(id).
+            select("BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
+            expand("MasterId").
+            get().
+            then(function (item) {
+                resolve(item)
+            });
+    })
+}
 function Create_Log(Detail, confirm, result, description) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_Equ_Log").items.add({
@@ -181,7 +191,8 @@ function Create_Log(Detail, confirm, result, description) {
             Dsc: description,
             DateConfirm: foramtDate(today),
             DetailIdId: Detail.Id,
-            ConfirmIdId: confirm[0].Id
+            ConfirmIdId: confirm[0].Id,
+            UserSubmitterId: _spPageContextInfo.userId
 
         }).then(function (item) {
             resolve(item);
@@ -194,8 +205,8 @@ function Get_Log(id) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_Equ_Log").
             items.
-            select("ConfirmId/Id,ConfirmId/Title,DetailId/Id,DetailId/Title,Result,Dsc,DateConfirm,Id").
-            expand("ConfirmId,DetailId").
+            select("ConfirmId/Id,ConfirmId/Title,DetailId/Id,DetailId/Title,Result,Dsc,DateConfirm,Id,UserSubmitter/Title,UserSubmitter/Id").
+            expand("ConfirmId,DetailId,UserSubmitter").
             filter("DetailId/Id eq " + id + "").
             orderBy("Id", false).
             get().
@@ -238,19 +249,6 @@ function Get_GenLookUpById(id) {
 
 }
 
-function Get_DetailsById(id) {
-    return new Promise(resolve => {
-        $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
-            items.
-            getById(id).
-            select("MasterId/Id,MasterId/Semat,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,StatusWF,NameKala,EstelamGheymat").
-            expand("MasterId").
-            get().
-            then(function (item) {
-                resolve(item)
-            });
-    })
-}
 function Get_Confirm() {
     return new Promise(resolve => {
         $pnp.sp.web.lists.
@@ -279,24 +277,24 @@ function Get_ConfirmByStep(step, CID) {
             });
     });
 }
-async function update_Details(_CurrentIdDetail, result, description, actionUser, Detail, Confirm, EstelamGheymat) {
+async function update_Details(_CurrentIdDetail, result, description, actionUser, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock) {
+
     var StatusWF = Detail.StatusWF
     var varStep = Detail.step
     var DarkhastSN = Detail.DarkhastSN
-
+    var ResDarkhastSN = ""
 
     var Policy = await Get_Policy(Detail)
 
-    if(Policy.length==0 && Confirm[0].Role == "ICT"){
-        alert("لطفا برای کالا "+splitString(Detail.NameKala)[1]+" و سمت "+Detail.MasterId.Semat+" محدوده قیمت مشخص نمایید")
+    if (Policy.length == 0 && Confirm[0].Role == "ICT") {
+        alert("لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید")
         $.LoadingOverlay("hide");
         return;
     }
-    if(Policy.length>0)
-    {
-    var PriceKala = _exchangeRate * Policy[0].Price
+    if (Policy.length > 0) {
+        var PriceKala = _exchangeRate * Policy[0].Price
     }
- 
+
     if (result == "تایید") {
         if (Confirm[0].Role == "ICT") {
             if (parseInt(EstelamGheymat) > PriceKala) {
@@ -315,18 +313,22 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
                 +2 جمع میشود که مرحله مدیر عامل رد شود
                 */
                 varStep = Detail.step + 2
-                DarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail);
+
+                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
+
             }
 
         }
         else if (Confirm[0].Role == "AML") {
             varStep = Detail.step + 1
-            DarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail);
+
+            ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
+
         }
         else if (Confirm[0].IsFinish == true) {
             StatusWF = "خاتمه یافته"
             varStep = Detail.step + 1
-            // var DarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail);
+
         }
         else {
             varStep = Detail.step + 1
@@ -348,19 +350,35 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
     else {
         //  StatusWF = "درگردش";
     }
-debugger
+
     /*پیدا کردن تایید کننده بعدی */
+
     var nextConfirm = await Get_ConfirmByStep(varStep, Detail.MasterId.CID)
+    var nextConfirmRes = nextConfirm.length == 0 ? "Finish" : nextConfirm[0].Role
+
     debugger
+    var DarkhastSN2 = ""
+    if (ResDarkhastSN == null || ResDarkhastSN == "") {
+        DarkhastSN2 = Detail.DarkhastSN
+    }
+    else {
+        DarkhastSN2 = ResDarkhastSN.DarkhastSN
+    }
+
+
     var Log = await Create_Log(Detail, Confirm, result, description)
+
     return new Promise(resolve => {
+
         var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");
         list.items.getById(_CurrentIdDetail).update({
             step: varStep,
             StatusWF: StatusWF,
-            DarkhastSN: DarkhastSN,
+            DarkhastSN: DarkhastSN2,
             EstelamGheymat: EstelamGheymat,
-            Role:nextConfirm[0].Role
+            Role: nextConfirmRes,
+            PlackNo: PlackNo,
+            BuyStock: BuyStock
         }).then(function (item) {
             resolve(item)
 
@@ -371,19 +389,7 @@ debugger
 
 }
 //Delete
-function deleteRecord(id) {
-    return new Promise(resolve => {
-        var list = $pnp.sp.web.lists.getByTitle("GIG_MTH_Request");
-        list.items.
-            getById(id).
-            delete().
-            then(function (item) {
-                // Console.log("item has been deleted");
-            }, function (data) {
-                //Console.log("error: " + data);
-            });
-    });
-}
+
 
 //-----------------------------
 async function confirmForm() {
@@ -422,15 +428,21 @@ async function rejectForm() {
 }
 async function save() {
 
+
     var description = ""
     description += $("#windowICT .table .description").val();
     description += $("#window .table .description").val()
     description += $("#windowJAM .table .description").val()
     description += $("#windowAML .table .description").val()
+    description += $("#windowREQ .table .description").val()
 
     var result = $("input[name='decide']:checked").val()
+    var BuyStock = $("input[name='BuyStock']:checked").val()
+
     var actionUser = _spPageContextInfo.userId;
     var EstelamGheymat = $("#EstelamGheymat").val()
+
+    var PlackNo = $("#selectOptionAmval option:selected").text();
 
     var Detail = await Get_DetailsById(_CurrentIdDetail)
     var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
@@ -444,22 +456,33 @@ async function save() {
         if (EstelamGheymat == null || EstelamGheymat == "") {
             EstelamGheymat = Detail.EstelamGheymat
         }
-        if(confirm[0].Role == "JAM"){
-            result="تایید" 
+        if (PlackNo == null || PlackNo == "") {
+            PlackNo = Detail.PlackNo
         }
-        var DetailRes = await update_Details(_CurrentIdDetail, result, description, actionUser, Detail, confirm, EstelamGheymat)
+        if (BuyStock == null || BuyStock == "") {
+            BuyStock = Detail.BuyStock
+        }
 
-        // var res=await serviceICTRequestTadarokat("980905","254");
+        if (confirm[0].Role == "JAM") {
+            result = "تایید"
+        }
+
+        var DetailRes = await update_Details(_CurrentIdDetail, result, description, actionUser, Detail, confirm, EstelamGheymat, PlackNo, BuyStock)
+
+
 
         showCartabl();
         if (confirm[0].Role == "ICT") {
             $("#windowICT").data("kendoWindow").close();
         }
-        else if(confirm[0].Role == "JAM"){
+        else if (confirm[0].Role == "JAM") {
             $("#windowJAM").data("kendoWindow").close();
         }
-        else if(confirm[0].Role == "AML"){
+        else if (confirm[0].Role == "AML") {
             $("#windowAML").data("kendoWindow").close();
+        }
+        else if (confirm[0].Role == "REQ") {
+            $("#windowREQ").data("kendoWindow").close();
         }
         else {
             $("#window").data("kendoWindow").close();
@@ -486,19 +509,21 @@ async function selectAllchk(s) {
 
 }
 async function Show(id) {
-  
+
     _CurrentIdDetail = id
     var Detail = await Get_DetailsById(id)
     var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
     var Log = await Get_Log(_CurrentIdDetail)
     var Policy = await Get_Policy(Detail)
+
     var GenLookUp = await Get_GenLookUpById(1)
     _exchangeRate = parseInt(GenLookUp.value)
     var table = "<table class='table'>"
     table += "<tr><th>واحد</th><th>تاریخ</th><th>نتیجه</th><th>توضیحات</th></tr>"
     for (let index = 0; index < Log.length; index++) {
         table += "<tr>"
-        table += "<td>" + Log[index].ConfirmId.Title + "</td>"
+
+        table += "<td>" + Log[index].ConfirmId.Title + " - (" + Log[index].UserSubmitter.Title + ")</td>"
         table += "<td>" + Log[index].DateConfirm + "</td>"
         table += "<td>" + Log[index].Result + "</td>"
         table += "<td>" + Log[index].Dsc + "</td>"
@@ -510,11 +535,13 @@ async function Show(id) {
     $("#FolderLogICT table").remove();
     $("#FolderLogJAM table").remove();
     $("#FolderLogAML table").remove();
+    $("#FolderLogREQ table").remove();
 
     $("#FolderLog").append(table);
     $("#FolderLogICT").append(table);
     $("#FolderLogJAM").append(table);
     $("#FolderLogAML").append(table);
+    $("#FolderLogREQ").append(table);
 
     $(".Price span").remove();
     $(".Confirm span").remove();
@@ -525,14 +552,25 @@ async function Show(id) {
     $(".Tozihat span").remove();
     $(".NameKala span").remove();
     $(".EstelamGheymated span").remove();
+    $(".PlackNo span").remove();
+    $(".BuyStock span").remove();
+    $(".AmvalPersonel select").remove();
 
 
+    $(".description").val();
     $("#EstelamGheymat").val(Detail.EstelamGheymat);
-    if(Policy.length>0)
-    {
-    $(".Price").append("<span>" + SeparateThreeDigits(parseInt(GenLookUp.value) * parseInt(Policy[0].Price)) + "</span>");
+
+    if (splitString(Detail.BuyStock)[0] == "خرید") {
+        $("#Buy").prop("checked", true);
     }
-    
+    if (splitString(Detail.BuyStock)[0] == "انبار") {
+        $("#Stock").prop("checked", true);
+    }
+
+    if (Policy.length > 0) {
+        $(".Price").append("<span>" + SeparateThreeDigits(parseInt(GenLookUp.value) * parseInt(Policy[0].Price)) + "</span>");
+    }
+
     $(".EstelamGheymated").append("<span>" + SeparateThreeDigits(Detail.EstelamGheymat) + "</span>");
     $(".Confirm").append("<span>" + confirm[0].Title + "</span>");
     $(".PersonelId").append("<span>" + Detail.MasterId.PersonelId + "</span>");
@@ -540,6 +578,8 @@ async function Show(id) {
     $(".DepName").append("<span>" + Detail.MasterId.DepName + "</span>");
     $(".RequestDate").append("<span>" + foramtDate(Detail.MasterId.RequestDate) + " " + calDayOfWeek(foramtDate(Detail.MasterId.RequestDate)) + "</span>");
     $(".Tozihat").append("<span>" + Detail.Tozihat + "</span>");
+    $(".PlackNo").append("<span>" + Detail.PlackNo + "</span>");
+    $(".BuyStock").append("<span>" + splitString(Detail.BuyStock)[0] + "</span>");
     $(".NameKala").append("<span>" + splitString(Detail.NameKala)[1] + "</span>");
 
 
@@ -547,18 +587,21 @@ async function Show(id) {
         showWindowsICT()
     }
     else if (confirm[0].Role == "JAM") {
-        var ShowAmvalPersonel = await  serviceShowAmvalPersonel();
-        var AmvalPersonelSelect="<select>"
+
+        var ShowAmvalPersonel = await serviceShowAmvalPersonel(Detail.MasterId.CID, Detail.MasterId.PersonelId);
+        var AmvalPersonelSelect = "<select id='selectOptionAmval'>"
         for (let index = 0; index < ShowAmvalPersonel.length; index++) {
-            AmvalPersonelSelect+="<option>"+ShowAmvalPersonel[index].MoshakhasatKala+" - "+ShowAmvalPersonel[index].PlackNo+"</option>"          
+            AmvalPersonelSelect += "<option value=" + ShowAmvalPersonel[index].PlackNo + ">" + ShowAmvalPersonel[index].MoshakhasatKala + " - " + ShowAmvalPersonel[index].PlackNo + "</option>"
         }
-        AmvalPersonelSelect+="</select>"
+        AmvalPersonelSelect += "</select>"
         $(".AmvalPersonel").append(AmvalPersonelSelect);
-        debugger
         showWindowsJAM()
     }
     else if (confirm[0].Role == "AML") {
         showWindowsAML()
+    }
+    else if (confirm[0].Role == "REQ") {
+        showWindowsREQ()
     }
     else {
         showWindows();
@@ -638,13 +681,33 @@ function showWindowsAML() {
         }
     }).data("kendoWindow").center().open();
 }
+function showWindowsREQ() {
+    var myWindow = $("#windowREQ"),
+        undo = $("#newRecord");
+    myWindow.kendoWindow({
+        width: "1200px",
+        title: "فرم تایید کالا",
+        visible: false,
+        actions: [
+            // "Pin",
+            // "Minimize",
+            //"Maximize",
+            "Close"
+        ],
+        close: function () {
+            undo.fadeIn();
+        }
+    }).data("kendoWindow").center().open();
+}
 //-------------------------------------------web services
 //create record header master in Tadarokat
-function serviceICTRequestTadarokat(myDate, PortalReqHeaderID) {
+function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock) {
+
+
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ICTRequestTadarokat"
-        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID }
-        // {"CID":"50","Date":"980919","PortalReqHeaderID":"984"}
+        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID, Kalasn: Kalasn, BuyStock: BuyStock }
+        // {"CID":"50","Date":"980917","PortalReqHeaderID":"68","Kalasn":"7.1","BuyStock":2}
         $.ajax({
             type: "POST",
             url: serviceURL,
@@ -656,11 +719,12 @@ function serviceICTRequestTadarokat(myDate, PortalReqHeaderID) {
             data: JSON.stringify(request),
             //processData: false,
             success: function (data) {
-                if ($.isNumeric(data)) {
+
+                if ($.isNumeric(data.DarkhastSN)) {
                     resolve(data);
                 }
                 else {
-                    alert(data)
+                    alert(data.DarkhastSN)
                     alert("لطفا با واحد پرتال تماس بگیرید" + "\n" + "کد مقابل را جهت پیگیری ارائه دهید" + _CurrentIdDetail)
                     $.LoadingOverlay("hide");
                 }
@@ -672,10 +736,10 @@ function serviceICTRequestTadarokat(myDate, PortalReqHeaderID) {
     })
 }
 //show amval personel
-function serviceShowAmvalPersonel() {
+function serviceShowAmvalPersonel(CID, PID) {
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ShowAmvalPersonel"
-        var request = { CID: CurrentCID, PID: CurrentPID }
+        var request = { CID: CID, PID: PID }
         // {"CID":"50","Date":"980919","PortalReqHeaderID":"984"}
         $.ajax({
             type: "POST",
@@ -688,7 +752,7 @@ function serviceShowAmvalPersonel() {
             data: JSON.stringify(request),
             //processData: false,
             success: function (data) {
-                    resolve(data);
+                resolve(data);
 
             },
             error: function (a) {
@@ -746,6 +810,7 @@ function foramtDate(str) {
 
 }
 function splitString(str) {
+    if (str == null) return ""
     return str.split(";#")
 }
 //سه رقم سه رقم جدا کنه برای پول   SeparateThreeDigits

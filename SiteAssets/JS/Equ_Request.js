@@ -118,7 +118,7 @@ async function save() {
     $("#message").append("<br/><a target='_blank' href='https://portal.golrang.com/hr/Services/Pages/MTH_MyRequest.aspx'>برای مشاهده درخواست های خود کلیک نمایید</a>");
     
     $.LoadingOverlay("hide");
-    $('#btnSave').prop('disabled', false);
+   // $('#btnSave').prop('disabled', true);
 }
 async function addDetail() {
     
