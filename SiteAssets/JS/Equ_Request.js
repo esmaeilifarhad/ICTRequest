@@ -169,6 +169,9 @@ async function ShowIndividualprofile() {
    
     CurrentSematId=_PersonelInfo.PersonelInfo.SematId;
     _IctKalaFilter= await serviceIctKalaFilter();
+    debugger
+    var Policy =await Get_Policy()
+    debugger
 
     var selectOption = "<select>"
     for (let index = 0; index < _IctKalaFilter.length; index++) {
@@ -205,7 +208,6 @@ function showMessage(message) {
 }
 //-------------------------------------------------------
 function CreateGIG_equ_Request() {
-    debugger
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Request").items.add({
             RR_ID:CurrentSematId,
@@ -258,6 +260,22 @@ function GetGIG_MTH_Details(_Date) {
             });
     });
 }
+function Get_Policy() {
+    debugger
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").
+            items.
+            select().
+            expand("CID").
+            filter("(CID eq " + CurrentCID + ") and (SemathaValue eq " + CurrentSematId + ")").
+            orderBy("Id", false).
+            get().
+            then(function (item) {
+                debugger
+                resolve(item)
+            });
+    })
+}
 //-------------------------------------------web services
 function servicePersonelInfo() {
     return new Promise(resolve => {
@@ -287,7 +305,7 @@ function servicePersonelInfo() {
 function serviceIctKalaFilter() {
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ictkalafilter";
-        var request = { CID: CurrentCID,Semat:CurrentSematId }
+        var request = { CID: CurrentCID}
         $.ajax({
             type: "POST",
             url: serviceURL,

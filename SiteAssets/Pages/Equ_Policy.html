@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!--font-awesome-->
+
+
+
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.custom.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.metro.BlueMetro.min.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.default.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/SiteAssets/CSS/kendo.rtl.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://portal.golrang.com/SiteAssets/JS/kendo.all.min.js" type="text/javascript"
+        language="javascript"></script>
+    <script src="https://portal.golrang.com/SiteAssets/JS/kendo.web.min.js" type="text/javascript"
+        language="javascript"></script>
+    <script src="https://portal.golrang.com/SiteAssets/JS/kendo.core.min.js" type="text/javascript"
+        language="javascript"></script>
+
+    <!--Persian DatePickers-->
+
+    <link rel="stylesheet"
+        href="https://portal.golrang.com/HR/Services/SiteAssets/datePicker/persianDatepicker-master/css/persianDatepicker-default.css" />
+
+    <script
+        src="https://portal.golrang.com/HR/Services/SiteAssets/datePicker/persianDatepicker-master/js/persianDatepicker.min.js"></script>
+    <script>
+        $("#elementId, .elementClass").persianDatepicker();
+    </script>
+    <!--jalaly/moment-->
+    <script src="https://portal.golrang.com/HR/Services/SiteAssets/js/Jalaly/moment.js"></script>
+    <script src="https://portal.golrang.com/HR/Services/SiteAssets/js/Jalaly/moment.min.js"></script>
+    <script src="https://portal.golrang.com/HR/Services/SiteAssets/js/Jalaly/moment-jalaali.js"></script>
+    <!--pnp-->
+    <script src="https://portal.golrang.com/SiteAssets/JS/pnp.min.js" type="text/javascript"></script>
+    <script src="https://portal.golrang.com/SiteAssets/JS/pnp.js" type="text/javascript"></script>
+
+    <!--main link-->
+    <script src="https://portal.golrang.com/ictrequests/SiteAssets/JS/Equ_Policy.js" type="text/javascript"
+        language="javascript"></script>
+    <link href="https://portal.golrang.com/ictrequests/SiteAssets/CSS/Equ_Policy.css" rel="stylesheet" type="text/css" />
+
+
+    <script src="https://portal.golrang.com/ictrequests/SiteAssets/JS/loadingoverlay.js" type="text/javascript"
+        language="javascript"></script>
+    <script src="https://portal.golrang.com/ictrequests/SiteAssets/JS/loadingoverlay.min.js" type="text/javascript"
+        language="javascript"></script>
+
+
+    <title>کارتابل اموال تهیه شده </title>
+
+</head>
+
+<body>
+    <div class="container main">
+        <br />
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="message"></div>
+            </div>
+        </div>
+
+        <div class=" row">
+            <div class="col-sm-12">
+
+                    <div style="direction: ltr;">
+                            <button style="background-color: #0fad4c!important" type="button"  onclick="Save()">ذخیره</button>
+                            <!-- <button style="background-color: #ce4415!important" type="button"  onclick="reject()">رد</button> -->
+                        </div>
+
+                <div id="tablePolicy">
+                    <table style='color:white' class="table">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>کالا</th>
+                            <th>تعلق میگیرد</th>
+                            <th>محدوده قیمت دلار</th>
+                            <th>تومان</th>
+                            <!--<th>تاریخ</th>
+                            <th>روز</th>
+                            <th>توضیحات</th>
+                            <th>جزئیات</th> -->
+                            <!-- <th> <input type="checkbox" id="selectAll" value="انتخاب همه" title="انتخاب همه"
+                                    alt="انتخاب همه" onclick="selectAllchk(this)" /></th> -->
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- others -->
+        <div id="example">
+            <div id="window" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                        <br>
+                        <div id="FolderLog"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- ICT -->
+        <div id="exampleICT">
+            <div id="windowICT" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                        <br>
+                        <div id="FolderLogICT"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr style="color: red">
+                                <td class="onvan">محدوده قیمت</td>
+                                <td class="Price"></td>
+                            </tr>
+
+
+                            <tr>
+                                <td class="onvan">قیمت کالا</td>
+                                <td class="EstelamGheymat"><input id="EstelamGheymat" type="text" /></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">درخواست از انبار\خرید</td>
+                                <td><input type="radio" id="Stock" name="BuyStock" value="انبار;#2" />انبار
+                                    <input type="radio" id="Buy" name="BuyStock" value="خرید;#1" />خرید</td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- JAM -->
+        <div id="exampleJAM">
+            <div id="windowJAM" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                        <br>
+                        <div id="FolderLogJAM"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">تخصیص اموال کاربر</td>
+                                <td class="AmvalPersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <!-- <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr> -->
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- AML -->
+        <div id="exampleAML">
+            <div id="windowAML" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                        <br>
+                        <div id="FolderLogAML"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr style="color: red">
+                                <td class="onvan">محدوده قیمت</td>
+                                <td class="Price"></td>
+                            </tr>
+
+
+                            <tr style="color: red">
+                                <td class="onvan">قیمت فعلی کالا</td>
+                                <td class="EstelamGheymated"></td>
+                            </tr>
+                            <tr style="color: red">
+                                <td class="onvan">درخواست از انبار\خرید</td>
+                                <td class="BuyStock"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- REQ -->
+        <div id="exampleREQ">
+            <div id="windowREQ" style="display:none">
+                <div class="row">
+                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                        <br>
+                        <div id="FolderLogREQ"></div>
+                    </div>
+                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                        <table class="table">
+                            <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
+                                <td class="onvan">مسئول</td>
+                                <td class="Confirm"></td>
+                            </tr>
+                            <tr>
+                                <td style="color: red" colspan="2" class="onvan">کاربر گرامی لطفا شماره پلاک خود را با
+                                    کالای تحویل گرفته شده چک نمایید و در صورت درست بودن آنرا تایید نمایید</td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">واحد</td>
+                                <td class="DepName"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کد پرسنلی</td>
+                                <td class="PersonelId"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نام</td>
+                                <td class="NamePersonel"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">کالا</td>
+                                <td class="NameKala"></td>
+                            </tr>
+
+                            <tr>
+                                <td class="onvan">تاریخ درخواست</td>
+                                <td class="RequestDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">توضیحات درخواست</td>
+                                <td class="Tozihat"></td>
+                            </tr>
+                            <tr style="color: red">
+                                <td class="onvan">کد اموال</td>
+                                <td class="PlackNo"></td>
+                            </tr>
+
+
+                            <!-- <tr>
+                                    <td class="onvan">درخواست از انبار\خرید</td>
+                                    <td><input type="radio" name="BuyStock" value="2" />انبار
+                                        <input type="radio" name="BuyStock" value="1" />خرید</td>
+                                </tr> -->
+                            <tr>
+                                <td class="onvan">توضیحات</td>
+                                <td>
+                                    <textarea class="description" name="comment" form="usrform"
+                                        placeholder="توضیحات ..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">نتیجه</td>
+                                <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <button class="btnSave"
+                                        style="background-color:rgb(167, 16, 23)!important; border-radius: 17px;"
+                                        onclick="save()" type="button" class="btn btn-success">ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+</body>
+
+</html>
+
+<script>
+    $(function () {
+        //usage
+        $(".usage").persianDatepicker();
+
+        //themes
+        $("#pdpDefault").persianDatepicker({ alwaysShow: true, });
+        $("#pdpLatoja").persianDatepicker({ theme: "latoja", alwaysShow: true, });
+        $("#pdpLightorang").persianDatepicker({ theme: "lightorang", alwaysShow: true, });
+        $("#pdpMelon").persianDatepicker({ theme: "melon", alwaysShow: true, });
+        $("#pdpDark").persianDatepicker({ theme: "dark", alwaysShow: true, });
+
+        //size
+        $("#pdpSmall").persianDatepicker({ cellWidth: 14, cellHeight: 12, fontSize: 8 });
+        $("#pdpBig").persianDatepicker({ cellWidth: 78, cellHeight: 60, fontSize: 18 });
+
+        //formatting
+        $("#pdpF1").persianDatepicker({ formatDate: "YYYY/MM/DD 0h:0m:0s:ms" });
+        $("#pdpF2").persianDatepicker({ formatDate: "YYYY-0M-0D" });
+        $("#pdpF3").persianDatepicker({ formatDate: "YYYY-NM-DW|ND", isRTL: !0 });
+
+        //startDate & endDate
+        $("#pdpStartEnd").persianDatepicker({ startDate: "1394/11/12", endDate: "1395/5/5" });
+        $("#pdpStartToday").persianDatepicker({ startDate: "today", endDate: "1410/11/5" });
+        $("#pdpEndToday").persianDatepicker({ startDate: "1397/11/12", endDate: "today" });
+
+        //selectedBefor & selectedDate
+        $("#pdpSelectedDate").persianDatepicker({ selectedDate: "1404/1/1", alwaysShow: !0 });
+        $("#pdpSelectedBefore").persianDatepicker({ selectedBefore: !0 });
+        $("#pdpSelectedBoth").persianDatepicker({ selectedBefore: !0, selectedDate: "1395/5/5" });
+
+        //jdate & gdate attributes
+        $("#pdp-data-jdate").persianDatepicker({
+            onSelect: function () {
+                alert($("#pdp-data-jdate").attr("data-gdate"));
+            }
+        });
+        $("#pdp-data-gdate").persianDatepicker({
+            showGregorianDate: true,
+            onSelect: function () {
+                alert($("#pdp-data-gdate").attr("data-jdate"));
+            }
+        });
+
+
+        //Gregorian date
+        $("#pdpGregorian").persianDatepicker({ showGregorianDate: true });
+
+        // jDateFuctions
+        // var jdf = new jDateFunctions();
+        // var pd = new persianDate();
+        // $("#pdpjdf-1").persianDatepicker({
+        //     onSelect: function () {
+        //         $("#pdpjdf-1").val(jdf.getJulianDayFromPersian(pd.parse($("#pdpjdf-1").val())));
+        //         $("#pdpjdf-2").val(jdf.getLastDayOfPersianMonth(pd.parse($("#pdpjdf-1").val())));
+        //         $("#pdpjdf-3").val(jdf.getPCalendarDate($("#pdpjdf-1").val()));
+        //     }
+        // });
+
+
+        // //convert jalali date to miladi
+        // $("#year, #month, #day").on("change", function () {
+        //     $("#month").val() > 6 ? $("#day-31").hide() : $("#day-31").show();;
+        //     showConverted();
+        // });
+
+        // $("#year").keyup(showConverted);
+        //
+        // function showConverted() {
+        //     try{
+        //         var pd = new persianDate();
+        //         pd.year = parseInt($("#year").val());
+        //         pd.month = parseInt($("#month").val());
+        //         pd.date = parseInt($("#day").val());
+        //
+        //         var jdf = new jDateFunctions();
+        //         $("#converted").html("Gregorian :  " + jdf.getGDate(pd)._toString("YYYY/MM/DD") + "     [" + jdf.getGDate(pd) + "]<br />Julian:  " + jdf.getJulianDayFromPersian(pd));
+        //
+        //     } catch (e) {
+        //         $("#converted").html("Enter the year correctly!");
+        //     }
+        // }
+
+
+        //startDate is tomarrow
+        var p = new persianDate();
+        $("#pdpStartDateTomarrow").persianDatepicker({ startDate: p.now().addDay(1).toString("YYYY/MM/DD"), endDate: p.now().addDay(4).toString("YYYY/MM/DD") });
+
+
+    });
+</script>
