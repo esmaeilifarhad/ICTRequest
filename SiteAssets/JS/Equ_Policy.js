@@ -7,7 +7,7 @@ var CurrentPLoginName = ""
 var today = "";
 var _exchangeRate = 0
 
-var Kala = []
+
 var _checkedItem = []
 var _usersInConfirm = []
 /*
@@ -57,25 +57,27 @@ function showMessage(message) {
     $("#message").append("<p class='message'>" + message + "</p>");
 }
 async function showKalaPolicy() {
-    $("#tablePolicy table  .rowData").remove()
+    var Kala = []
+   // $("#tablePolicy table")
+    $("#tablePolicy table .rowData").remove()
     //---------------------
     var KalaFilter = await serviceIctKalaFilter();
     var Policy = await Get_Policy(5, 50);
-    debugger
+
     var GenLookUp = await Get_GenLookUpById(1)
     for (let index = 0; index < KalaFilter.length; index++) {
         var res = Policy.find(x => x.KalaValue == KalaFilter[index].KalaValue);
         if (res == undefined) {
-            Kala.push({ type: "create",KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
+            Kala.push({ type: "create", KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
         }
         else {
             Kala.push({ type: "update", Id: res.Id, KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, IsBelong: res.IsBelong, Price: res.Price, CID: 50 })
         }
     }
     var table = ""
-    $.LoadingOverlay("show");
+   // $.LoadingOverlay("show");
     for (let index = 0; index < Kala.length; index++) {
-        table += "<tr  class='rowData' Title="+Kala[index].Title+" KalaValue="+Kala[index].KalaValue+" type=" + Kala[index].type + " Data_Id=" + Kala[index].Id + ">"
+        table += "<tr  class='rowData' Title=" + Kala[index].KalaName + " KalaValue=" + Kala[index].KalaValue + " type=" + Kala[index].type + " Data_Id=" + Kala[index].Id + ">"
         table += "<td col='pdpDark'>"
         table += (index + 1)
         table += "</td>"
@@ -98,7 +100,7 @@ async function showKalaPolicy() {
         table += "</td>"
         table += "</tr>"
     }
-    $.LoadingOverlay("hide");
+   // $.LoadingOverlay("hide");
     $("#tablePolicy table").append(table);
 
     // _spPageContextInfo.userId
@@ -106,6 +108,7 @@ async function showKalaPolicy() {
 //-------------------------------------------------------CRUD
 //Update
 function updatePolicy(Id, Price, IsBelong) {
+
     return new Promise(resolve => {
         var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Policy");
         list.items.getById(Id).update({
@@ -118,22 +121,19 @@ function updatePolicy(Id, Price, IsBelong) {
 
 }
 //Create 
-function createPolicy(Price, IsBelong,KalaValue) {
-    debugger
-
+function createPolicy(Price, IsBelong, KalaValue, Title) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").items.add({
             Price: parseInt(Price),
             IsBelong: IsBelong,
-            KalaValue:KalaValue,
-            SemathaValue:"5",
-            GenId:2,
-            Title:"feru"
+            KalaValue: KalaValue,
+            SemathaValue: "5",
+            GenId: 2,
+            Title: Title
         }).then(function (item) {
-debugger
         });
     });
-    
+
 }
 //Get 
 function Get_Policy(SemathaValue, CID) {
@@ -160,36 +160,49 @@ function Get_GenLookUpById(id) {
     })
 }
 //-----------------------------
- function Save() {
+async function Save() {
     $.LoadingOverlay("show");
-    $("#tablePolicy table tr").each(async function () {
-        
-        var IsBelong = false
-        var Id = $(this).attr("data_id")
-        var KalaValue = $(this).attr("KalaValue")
-        var type = $(this).attr("type")
-        var Price = $(this).find(".Price").val()
-        if ($(this).find('.KalaValue').is(":checked")) {
-            IsBelong = true;
-        }
-        else {
-            IsBelong = false;
-        }
-
-        if (type != undefined) {
-            if (type == "update") {
-                var resPolicy = await updatePolicy(Id,Price,IsBelong)
-            }
-            if (type == "create") {
-                var resPolicy2 = await createPolicy(Price, IsBelong,KalaValue)
-            }
-        }
-        else {
-
-        }
-    })
-
+    var t = await save2();
+    debugger
+    showKalaPolicy();
     $.LoadingOverlay("hide");
+}
+function save2() {
+    return new Promise(resolve => {
+        var count = $("#tablePolicy table tr").length;
+        debugger
+        $("#tablePolicy table tr").each(async function (i) {
+            var IsBelong = false
+            var Id = $(this).attr("data_id")
+            var KalaValue = $(this).attr("KalaValue")
+            var type = $(this).attr("type")
+            var Title = $(this).attr("Title")
+            var Price = $(this).find(".Price").val()
+            if ($(this).find('.KalaValue').is(":checked")) {
+                IsBelong = true;
+            }
+            else {
+                IsBelong = false;
+            }
+
+            if (type != undefined) {
+                if (type == "update") {
+                    var resPolicy = await updatePolicy(Id, Price, IsBelong)
+                }
+                if (type == "create") {
+                    var resPolicy2 = await createPolicy(Price, IsBelong, KalaValue, Title)
+                }
+            }
+            else {
+
+            }
+            if (i+1 === count) {
+                // this will be executed at the end of the loop
+                resolve("finish");
+            }
+        })
+       
+    })
 }
 
 //-------------------------------------------web services
