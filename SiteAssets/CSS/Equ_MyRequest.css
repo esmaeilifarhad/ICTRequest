@@ -1,43 +1,20 @@
-#tablePolicy table th{
-  text-align: right
-}
 #WebPartWPQ2_ChromeTitle,#pageTitle{
   display: none;
 }
-#mainHeader table td{
-  padding-left: 16px;
+#WebPartWPQ2{
+  /*background-color: black;*/
+  background-image: linear-gradient(to right,#2e2e2e, #530606);
 }
- /*.tblH {
-    color: black;
-}*/
-/*
- .tblH td,th {
-    padding: 4px;
-    border: 1px solid black;
+#tableres2 table {
+  text-align: right;
+font-weight: bolder;
+color: rgb(113, 216, 207);
 }
-*/
-/*
-button{
-  background-color: #ce4415!important
-}
-*/
-#FolderLog th,td{
-  text-align: right
-}
-#FolderLogICT th,td{
-  text-align: right
-}
-#FolderLogJAM th,td{
-  text-align: right
-}
-#FolderLogAML th,td{
-  text-align: right
-}
-#FolderLogREQ th,td{
-  text-align: right
-}
+
  #tableres2 th {
-    text-align: right
+    text-align: right;
+font-weight: bolder;
+color: yellow;
 }
 #imgFatLevel{
     text-align: center
@@ -46,12 +23,11 @@ button{
     font-weight: bold;
 }
 #WebPartWPQ2{
-  /*background-color: black;*/
-  background-image: linear-gradient(to right,#2e2e2e, #530606);
+  background-color:#f3eded;
 }
 h3 {
-    color: white;
-    text-shadow: 1px 1px 2px rgb(233, 214, 45), 0 0 25px rgb(115, 115, 212), 0 0 5px rgb(64, 219, 134);
+    color: #97161b;
+    text-shadow: 1px 1px 2px rgb(20, 20, 19), 0 0 25px rgb(115, 115, 212), 0 0 5px rgb(64, 219, 134);
   }
 
  .main #tableres {
@@ -183,12 +159,12 @@ h3 {
    /* background-image: linear-gradient(to bottom right, red, yellow); */
     background-image: linear-gradient(to bottom right, #a3bcf1, #f17356);
   }
-  #tableres2{
+  /* #tableres2{
+    color: white;
     background-color: beige;
-   /* background-color: red;*/ /* For browsers that do not support gradients */
-   /* background-image: linear-gradient(to bottom right, red, yellow); */
-    background-image: linear-gradient(to bottom right, #97f7a7, #b856f1);
-  }
+
+    background-image: linear-gradient(to bottom right, #9a090f, #230435);
+  } */
   #dore{
     background-color: beige;
    /* background-color: red;*/ /* For browsers that do not support gradients */

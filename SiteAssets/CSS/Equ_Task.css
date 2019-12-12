@@ -180,7 +180,8 @@ h3 {
     background-color: beige;
    /* background-color: red;*/ /* For browsers that do not support gradients */
    /* background-image: linear-gradient(to bottom right, red, yellow); */
-    background-image: linear-gradient(to bottom right, #97f7a7, #b856f1);
+    background-image: linear-gradient(to bottom right, #d8ffff, #0072c6);
+
   }
   #dore{
     background-color: beige;

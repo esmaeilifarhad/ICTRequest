@@ -115,7 +115,7 @@ async function save() {
         var GIG_MTH_Detail = await CreateGIG_equ_Details(GIG_equ_Request, _DetailsObjects[index]);
     }
     showMessage("درخواست شما با موفقیت ذخیره شد")
-    $("#message").append("<br/><a target='_blank' href='https://portal.golrang.com/hr/Services/Pages/MTH_MyRequest.aspx'>برای مشاهده درخواست های خود کلیک نمایید</a>");
+    $("#message").append("<br/><a target='_blank' href='https://portal.golrang.com/ictrequests/Pages/Equ_MyRequest.aspx'>برای مشاهده درخواست های خود کلیک نمایید</a>");
     
     $.LoadingOverlay("hide");
    // $('#btnSave').prop('disabled', true);
