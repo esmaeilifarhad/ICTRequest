@@ -164,18 +164,36 @@ async function addDetail() {
 }
 //-------------------------------------------------------
 async function ShowIndividualprofile() {
-
+    var Kala = []
     _PersonelInfo = await servicePersonelInfo();
    
     CurrentSematId=_PersonelInfo.PersonelInfo.SematId;
     _IctKalaFilter= await serviceIctKalaFilter();
-    debugger
+
     var Policy =await Get_Policy()
+    for (let index = 0; index < _IctKalaFilter.length; index++) {
+        
+        var res = Policy.find(x => x.KalaValue == _IctKalaFilter[index].KalaValue);
+        if (res == undefined) {
+           // Kala.push({ type: "create", KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
+        }
+        else {
+            if(res.IsBelong==true)
+            {
+                Kala.push({  KalaValue: _IctKalaFilter[index].KalaValue, KalaName: _IctKalaFilter[index].KalaName })  
+            }
+           // Kala.push({ type: "update", Id: res.Id, KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, IsBelong: res.IsBelong, Price: res.Price, CID: 50 })
+        }
+      //  debugger
+       
+        
+    }
+    console.log(Kala);
     debugger
 
     var selectOption = "<select>"
-    for (let index = 0; index < _IctKalaFilter.length; index++) {
-        selectOption += "<option value=" + _IctKalaFilter[index].KalaValue + ">" + _IctKalaFilter[index].KalaName + "</option>"
+    for (let index = 0; index < Kala.length; index++) {
+        selectOption += "<option value=" + Kala[index].KalaValue + ">" + Kala[index].KalaName + "</option>"
     }
     selectOption += "</select>"
     $("#Kala").append(selectOption)
@@ -261,17 +279,14 @@ function GetGIG_MTH_Details(_Date) {
     });
 }
 function Get_Policy() {
-    debugger
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").
             items.
-            select().
-            expand("CID").
-            filter("(CID eq " + CurrentCID + ") and (SemathaValue eq " + CurrentSematId + ")").
-            orderBy("Id", false).
+            select("Gen/CID,KalaValue,SemathaValue,Price,IsBelong,Id,Title").
+            filter("(SemathaValue eq " + CurrentSematId + ") and (Gen/CID eq " + CurrentCID + ")").
+            expand("Gen").
             get().
             then(function (item) {
-                debugger
                 resolve(item)
             });
     })

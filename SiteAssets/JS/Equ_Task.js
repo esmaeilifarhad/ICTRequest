@@ -80,7 +80,6 @@ async function showCartabl() {
         var table = ""
         for (let index = 0; index < Details.length; index++) {
             table += "<tr class='rowData' Data_Id=" + Details[index].ID + ">"
-
             table += "<td col='pdpDark'>"
             table += (index + 1)
             table += "</td>"
@@ -278,7 +277,6 @@ function Get_ConfirmByStep(step, CID) {
     });
 }
 async function update_Details(_CurrentIdDetail, result, description, actionUser, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock) {
-
     var StatusWF = Detail.StatusWF
     var varStep = Detail.step
     var DarkhastSN = Detail.DarkhastSN
@@ -367,7 +365,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
 
 
     var Log = await Create_Log(Detail, Confirm, result, description)
-
+debugger
     return new Promise(resolve => {
 
         var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");

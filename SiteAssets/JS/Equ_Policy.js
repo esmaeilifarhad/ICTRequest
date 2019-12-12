@@ -57,14 +57,44 @@ function showMessage(message) {
     $("#message").append("<p class='message'>" + message + "</p>");
 }
 async function showKalaPolicy() {
+
+    var CompanySelectRes = $("#CompanySelect option:selected").val();
+    var SematSelectRes = $("#SematSelect option:selected").val();
     var Kala = []
-   // $("#tablePolicy table")
+    // $("#tablePolicy table")
     $("#tablePolicy table .rowData").remove()
     //---------------------
-    var KalaFilter = await serviceIctKalaFilter();
-    var Policy = await Get_Policy(5, 50);
 
+    if (SematSelectRes == undefined) {
+        //Show Company
+        var GenLookUps = await Get_GenLookUp(2)
+        var CompanySelect = "<select id='selectOptionCompany' onchange='showKalaPolicy()'>"
+        for (let index = 0; index < GenLookUps.length; index++) {
+            CompanySelect += "<option value=" + GenLookUps[index].Id + ">" + GenLookUps[index].Title + "</option>"
+        }
+        CompanySelect += "</select>"
+        $("#CompanySelect select").remove();
+        $("#CompanySelect").append(CompanySelect);
+
+        //------------------------------------------------------------Show Semat
+        var GenLookUpSemat = await Get_GenLookUp(3)
+        var SematSelect = "<select id='selectOptionCompany' onchange='showKalaPolicy()'>"
+        for (let index = 0; index < GenLookUpSemat.length; index++) {
+            SematSelect += "<option value=" + GenLookUpSemat[index].value + ">" + GenLookUpSemat[index].Title + "</option>"
+        }
+        SematSelect += "</select>"
+        $("#SematSelect select").remove();
+        $("#SematSelect").append(SematSelect);
+    }
+    //----------------------------------------------------------show  exchangeRate
     var GenLookUp = await Get_GenLookUpById(1)
+    $("#exchangeRate span").remove()
+    $("#exchangeRate").append("<span>نرخ ارز : </span><span>" + SeparateThreeDigits(GenLookUp.value) + "</span>");
+    //-----------------------------------------------------------show Policy Table
+    var CompanySelectRes = $("#CompanySelect option:selected").val();
+    var SematSelectRes = $("#SematSelect option:selected").val();
+    var KalaFilter = await serviceIctKalaFilter();
+    var Policy = await Get_Policy(SematSelectRes, CompanySelectRes);
     for (let index = 0; index < KalaFilter.length; index++) {
         var res = Policy.find(x => x.KalaValue == KalaFilter[index].KalaValue);
         if (res == undefined) {
@@ -74,8 +104,8 @@ async function showKalaPolicy() {
             Kala.push({ type: "update", Id: res.Id, KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, IsBelong: res.IsBelong, Price: res.Price, CID: 50 })
         }
     }
+    
     var table = ""
-   // $.LoadingOverlay("show");
     for (let index = 0; index < Kala.length; index++) {
         table += "<tr  class='rowData' Title=" + Kala[index].KalaName + " KalaValue=" + Kala[index].KalaValue + " type=" + Kala[index].type + " Data_Id=" + Kala[index].Id + ">"
         table += "<td col='pdpDark'>"
@@ -100,10 +130,7 @@ async function showKalaPolicy() {
         table += "</td>"
         table += "</tr>"
     }
-   // $.LoadingOverlay("hide");
     $("#tablePolicy table").append(table);
-
-    // _spPageContextInfo.userId
 }
 //-------------------------------------------------------CRUD
 //Update
@@ -122,15 +149,18 @@ function updatePolicy(Id, Price, IsBelong) {
 }
 //Create 
 function createPolicy(Price, IsBelong, KalaValue, Title) {
+    var CompanySelectRes = parseInt($("#CompanySelect option:selected").val());
+    var SematSelectRes = parseInt($("#SematSelect option:selected").val());
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").items.add({
             Price: parseInt(Price),
             IsBelong: IsBelong,
             KalaValue: KalaValue,
-            SemathaValue: "5",
-            GenId: 2,
+            SemathaValue: SematSelectRes,
+            GenId: CompanySelectRes,
             Title: Title
         }).then(function (item) {
+            resolve(item);
         });
     });
 
@@ -140,8 +170,8 @@ function Get_Policy(SemathaValue, CID) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").
             items.
-            select("Gen/CID,KalaValue,SemathaValue,Price,IsBelong,Id,Title").
-            filter("(SemathaValue eq " + SemathaValue + ") and (Gen/CID eq " + CID + ")").
+            select("Gen/Id,KalaValue,SemathaValue,Price,IsBelong,Id,Title").
+            filter("(SemathaValue eq " + SemathaValue + ") and (Gen/Id eq " + CID + ")").
             expand("Gen").
             orderBy("Id", false).
             get().
@@ -159,6 +189,20 @@ function Get_GenLookUpById(id) {
             });
     })
 }
+function Get_GenLookUp(Code) {
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.getByTitle("Equ_GenLookUp").
+            items.
+            select().
+            orderBy("Order", true).
+            filter("(Code eq " + Code + ")").
+            get().
+
+            then(function (item) {
+                resolve(item)
+            });
+    })
+}
 //-----------------------------
 async function Save() {
     $.LoadingOverlay("show");
@@ -170,8 +214,9 @@ async function Save() {
 function save2() {
     return new Promise(resolve => {
         var count = $("#tablePolicy table tr").length;
-        debugger
+        //count=count-1
         $("#tablePolicy table tr").each(async function (i) {
+           
             var IsBelong = false
             var Id = $(this).attr("data_id")
             var KalaValue = $(this).attr("KalaValue")
@@ -185,23 +230,40 @@ function save2() {
                 IsBelong = false;
             }
 
+            
+
+
+        
             if (type != undefined) {
                 if (type == "update") {
+                    console.log("update " + i + " - " + count)
                     var resPolicy = await updatePolicy(Id, Price, IsBelong)
+                    if (i + 1 >= count) {
+                        debugger
+                        // this will be executed at the end of the loop
+                        resolve("finish");
+                    }
                 }
                 if (type == "create") {
+                    console.log("create " + i + " - " + count)
+                    if(i>58)
+                    {
+                        debugger
+                    }
                     var resPolicy2 = await createPolicy(Price, IsBelong, KalaValue, Title)
+                    if (i + 1 >= count) {
+                        debugger
+                        // this will be executed at the end of the loop
+                        resolve("finish");
+                    }
                 }
             }
             else {
 
             }
-            if (i+1 === count) {
-                // this will be executed at the end of the loop
-                resolve("finish");
-            }
+           
         })
-       
+
     })
 }
 

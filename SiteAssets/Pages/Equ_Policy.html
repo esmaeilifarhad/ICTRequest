@@ -45,7 +45,8 @@
     <!--main link-->
     <script src="https://portal.golrang.com/ictrequests/SiteAssets/JS/Equ_Policy.js" type="text/javascript"
         language="javascript"></script>
-    <link href="https://portal.golrang.com/ictrequests/SiteAssets/CSS/Equ_Policy.css" rel="stylesheet" type="text/css" />
+    <link href="https://portal.golrang.com/ictrequests/SiteAssets/CSS/Equ_Policy.css" rel="stylesheet"
+        type="text/css" />
 
 
     <script src="https://portal.golrang.com/ictrequests/SiteAssets/JS/loadingoverlay.js" type="text/javascript"
@@ -60,21 +61,24 @@
 
 <body>
     <div class="container main">
-        <br />
-        <div class="row">
-            <div class="col-sm-12">
-                <div id="message"></div>
-            </div>
-        </div>
 
         <div class=" row">
             <div class="col-sm-12">
+                <br />
+                <div id="mainHeader">
+                    <table>
+                        <tr>
+                            <td> <button style="background-color: #0fad4c!important" type="button"
+                                    onclick="Save()">ذخیره</button></td>
+                            <td id="exchangeRate" style='color:red'></td>
+                            <td id="CompanySelect"></td>
+                            <td id="SematSelect"></td>
+                        </tr>
+                    </table>
 
-                    <div style="direction: ltr;">
-                            <button style="background-color: #0fad4c!important" type="button"  onclick="Save()">ذخیره</button>
-                            <!-- <button style="background-color: #ce4415!important" type="button"  onclick="reject()">رد</button> -->
-                        </div>
-
+                    <!-- <button style="background-color: #ce4415!important" type="button"  onclick="reject()">رد</button> -->
+                </div>
+                <br />
                 <div id="tablePolicy">
                     <table style='color:white' class="table">
                         <tr>

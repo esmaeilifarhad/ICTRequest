@@ -4,6 +4,9 @@
 #WebPartWPQ2_ChromeTitle,#pageTitle{
   display: none;
 }
+#mainHeader table td{
+  padding-left: 16px;
+}
  /*.tblH {
     color: black;
 }*/
