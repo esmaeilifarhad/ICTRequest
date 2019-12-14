@@ -6,10 +6,12 @@ var CurrentDep = ""
 var CurrentPLoginName = ""
 var today = "";
 var _exchangeRate = 0
+var _Mojoodi_AnbarICT = 0;
 
 var _UserInGroupos = []
 var _checkedItem = []
 var _usersInConfirm = []
+var _MojoodiAnbarICT = []
 /*
 List Name :
 
@@ -151,10 +153,10 @@ function Get_Details(usersInConfirm) {
 
         // }
 
-        console.log(filterStatusWF);
+        // console.log(filterStatusWF);
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
+            items.select("exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
             expand("MasterId").
             // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
             filter(filterStatusWF).
@@ -174,7 +176,7 @@ function Get_DetailsById(id) {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
             items.
             getById(id).
-            select("BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
+            select("exchangeRate,BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
             expand("MasterId").
             get().
             then(function (item) {
@@ -218,8 +220,9 @@ function Get_Policy(Detail) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").
             items.
-            select().
-            filter("(KalaValue eq " + splitString(Detail.NameKala)[0] + ") and (SemathaValue eq " + Detail.MasterId.RR_ID + ")").
+            select("Gen/Id,Gen/CID,KalaValue,SemathaValue,Price,IsBelong,Id,Title,IsUnlimited").
+            filter("(KalaValue eq " + splitString(Detail.NameKala)[0] + ") and (SemathaValue eq " + Detail.MasterId.RR_ID + ") and (Gen/CID eq " + Detail.MasterId.CID + ")").
+            expand("Gen").
             orderBy("Id", false).
             get().
             then(function (item) {
@@ -281,9 +284,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
     var varStep = Detail.step
     var DarkhastSN = Detail.DarkhastSN
     var ResDarkhastSN = ""
-
     var Policy = await Get_Policy(Detail)
-
     if (Policy.length == 0 && Confirm[0].Role == "ICT") {
         alert("لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید")
         $.LoadingOverlay("hide");
@@ -295,7 +296,8 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
 
     if (result == "تایید") {
         if (Confirm[0].Role == "ICT") {
-            if (parseInt(EstelamGheymat) > PriceKala) {
+            debugger
+            if (parseInt(EstelamGheymat) > PriceKala && Policy[0].IsUnlimited == false) {
 
                 var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
                 if (res == true) {
@@ -354,7 +356,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
     var nextConfirm = await Get_ConfirmByStep(varStep, Detail.MasterId.CID)
     var nextConfirmRes = nextConfirm.length == 0 ? "Finish" : nextConfirm[0].Role
 
-    debugger
+
     var DarkhastSN2 = ""
     if (ResDarkhastSN == null || ResDarkhastSN == "") {
         DarkhastSN2 = Detail.DarkhastSN
@@ -362,12 +364,11 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
     else {
         DarkhastSN2 = ResDarkhastSN.DarkhastSN
     }
+    if (_exchangeRate == 0) {
+        _exchangeRate = Detail.exchangeRate;
+    }
 
-
-    var Log = await Create_Log(Detail, Confirm, result, description)
-debugger
     return new Promise(resolve => {
-
         var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");
         list.items.getById(_CurrentIdDetail).update({
             step: varStep,
@@ -376,8 +377,10 @@ debugger
             EstelamGheymat: EstelamGheymat,
             Role: nextConfirmRes,
             PlackNo: PlackNo,
-            BuyStock: BuyStock
-        }).then(function (item) {
+            BuyStock: BuyStock,
+            exchangeRate: _exchangeRate
+        }).then(async function (item) {
+            var Log = await Create_Log(Detail, Confirm, result, description)
             resolve(item)
 
         });
@@ -386,44 +389,58 @@ debugger
 
 
 }
+function Update_GenLookUp(Id, price) {
+    var price = removeComma(price).toString()
+    price = removeLastChar(price)
+    return new Promise(resolve => {
+        var list = $pnp.sp.web.lists.getByTitle("Equ_GenLookUp");
+        list.items.getById(Id).update({
+            value: price
+        }).then(function (item) {
+            resolve(item);
+        }).catch((error => {
+            resolve(item);
+        }));
+    })
+}
 //Delete
 
 
 //-----------------------------
-async function confirmForm() {
-    $(this).prop('disabled', true);
-    $.LoadingOverlay("show");
+// async function confirmForm() {
+//     $(this).prop('disabled', true);
+//     $.LoadingOverlay("show");
 
-    $("#tableres2 table tr td input").each(function () {
-        if ($(this).context.checked == true) {
-            _checkedItem.push({ ID: $(this).attr("data_id") })
-        }
-    })
-    for (let index = 0; index < _checkedItem.length; index++) {
-        debugger
-        var GIG_MTH_Detail = await getGIG_MTH_DetailsById(_checkedItem[index].ID);
-        var res = await updateGIG_MTH_Details(_checkedItem[index].ID, "yes", GIG_MTH_Detail.step)
-    }
-    _checkedItem = [];
-    showCartabl();
+//     $("#tableres2 table tr td input").each(function () {
+//         if ($(this).context.checked == true) {
+//             _checkedItem.push({ ID: $(this).attr("data_id") })
+//         }
+//     })
+//     for (let index = 0; index < _checkedItem.length; index++) {
+//         debugger
+//         var GIG_MTH_Detail = await getGIG_MTH_DetailsById(_checkedItem[index].ID);
+//         var res = await updateGIG_MTH_Details(_checkedItem[index].ID, "yes", GIG_MTH_Detail.step)
+//     }
+//     _checkedItem = [];
+//     showCartabl();
 
-    $(this).prop('disabled', false);
-    $.LoadingOverlay("hide");
+//     $(this).prop('disabled', false);
+//     $.LoadingOverlay("hide");
 
-}
-async function rejectForm() {
-    $("#tableres2 table tr td input").each(function () {
-        if ($(this).context.checked == true) {
-            _checkedItem.push({ ID: $(this).attr("data_id") })
-        }
-    })
-    for (let index = 0; index < _checkedItem.length; index++) {
-        var GIG_MTH_Detail = await getGIG_MTH_DetailsById(_checkedItem[index].ID);
-        var res = await updateGIG_MTH_Details(_checkedItem[index].ID, "no", GIG_MTH_Detail.step)
-    }
-    _checkedItem = [];
-    showCartabl();
-}
+// }
+// async function rejectForm() {
+//     $("#tableres2 table tr td input").each(function () {
+//         if ($(this).context.checked == true) {
+//             _checkedItem.push({ ID: $(this).attr("data_id") })
+//         }
+//     })
+//     for (let index = 0; index < _checkedItem.length; index++) {
+//         var GIG_MTH_Detail = await getGIG_MTH_DetailsById(_checkedItem[index].ID);
+//         var res = await updateGIG_MTH_Details(_checkedItem[index].ID, "no", GIG_MTH_Detail.step)
+//     }
+//     _checkedItem = [];
+//     showCartabl();
+// }
 async function save() {
 
 
@@ -513,9 +530,26 @@ async function Show(id) {
     var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
     var Log = await Get_Log(_CurrentIdDetail)
     var Policy = await Get_Policy(Detail)
+    //------------------------update exchange rate
+    if (confirm[0].Role == "ICT") {
+        //  var ER = await exchangeRate();
+        // Update_GenLookUp(1, ER.sell_usd.price)
 
+        _MojoodiAnbarICT = [];
+        _MojoodiAnbarICT = await Mojoodi_AnbarICT(CurrentCID);
+        var res = _MojoodiAnbarICT.find(x => x.KalaID == splitString(Detail.NameKala)[0]);
+
+        if (res == undefined) {
+            _Mojoodi_AnbarICT = null
+        }
+        else {
+            _Mojoodi_AnbarICT = parseInt(res.mojoodi)
+        }
+
+    }
+    //--------------------
     var GenLookUp = await Get_GenLookUpById(1)
-    _exchangeRate = parseInt(GenLookUp.value)
+
     var table = "<table class='table'>"
     table += "<tr><th>واحد</th><th>تاریخ</th><th>نتیجه</th><th>توضیحات</th></tr>"
     for (let index = 0; index < Log.length; index++) {
@@ -544,6 +578,7 @@ async function Show(id) {
     $(".Price span").remove();
     $(".Confirm span").remove();
     $(".PersonelId span").remove();
+    $(".Semat span").remove();
     $(".NamePersonel span").remove();
     $(".DepName span").remove();
     $(".RequestDate span").remove();
@@ -553,6 +588,8 @@ async function Show(id) {
     $(".PlackNo span").remove();
     $(".BuyStock span").remove();
     $(".AmvalPersonel select").remove();
+    $(".Mojoodi_AnbarICT span").remove();
+
 
 
     $(".description").val();
@@ -564,14 +601,15 @@ async function Show(id) {
     if (splitString(Detail.BuyStock)[0] == "انبار") {
         $("#Stock").prop("checked", true);
     }
-
     if (Policy.length > 0) {
-        $(".Price").append("<span>" + SeparateThreeDigits(parseInt(GenLookUp.value) * parseInt(Policy[0].Price)) + "</span>");
+        $(".Price").append((Policy[0].IsUnlimited == true) ? "<span>نامحدود</span>" : "<span>" + SeparateThreeDigits(parseInt(GenLookUp.value) * parseInt(Policy[0].Price)) + "</span>");
     }
 
     $(".EstelamGheymated").append("<span>" + SeparateThreeDigits(Detail.EstelamGheymat) + "</span>");
     $(".Confirm").append("<span>" + confirm[0].Title + "</span>");
+    $(".Mojoodi_AnbarICT").append((_Mojoodi_AnbarICT == null) ? "<span>در انبار چنین کالایی تعریف نشده است</span>" : "<span>" + _Mojoodi_AnbarICT + "</span>");
     $(".PersonelId").append("<span>" + Detail.MasterId.PersonelId + "</span>");
+    $(".Semat").append("<span>" + Detail.MasterId.Semat + "</span>");
     $(".NamePersonel").append("<span>" + Detail.MasterId.Title + "</span>");
     $(".DepName").append("<span>" + Detail.MasterId.DepName + "</span>");
     $(".RequestDate").append("<span>" + foramtDate(Detail.MasterId.RequestDate) + " " + calDayOfWeek(foramtDate(Detail.MasterId.RequestDate)) + "</span>");
@@ -582,6 +620,7 @@ async function Show(id) {
 
 
     if (confirm[0].Role == "ICT") {
+        _exchangeRate = parseInt(GenLookUp.value)
         showWindowsICT()
     }
     else if (confirm[0].Role == "JAM") {
@@ -759,7 +798,58 @@ function serviceShowAmvalPersonel(CID, PID) {
         });
     })
 }
+function exchangeRate() {
+    return new Promise(resolve => {
+        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/callOutWebService";
+        // var request = { CID: CurrentCID }
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            contentType: "application/json; charset=utf-8",
+            xhrFields: {
+                'withCredentials': true
+            },
+            dataType: "json",
+            // data: JSON.stringify(request),
+            //processData: false,
+            success: function (data) {
 
+                resolve(data);
+                // console.log(data);
+
+            },
+            error: function (a) {
+
+                console.log(a);
+            }
+        });
+    })
+}
+function Mojoodi_AnbarICT(CID) {
+    return new Promise(resolve => {
+        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/Mojoodi_AnbarICT"
+        var request = { CID: CID }
+
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            contentType: "application/json; charset=utf-8",
+            xhrFields: {
+                'withCredentials': true
+            },
+            dataType: "json",
+            data: JSON.stringify(request),
+            //processData: false,
+            success: function (data) {
+                resolve(data);
+
+            },
+            error: function (a) {
+                console.log(a);
+            }
+        });
+    })
+}
 //-----------------------------Utility
 function calDayOfWeek(date) {
     var mounth = ""
@@ -818,6 +908,14 @@ function SeparateThreeDigits(str) {
 
     // return parseInt(str);
 
+}
+function removeComma(str) {
+    var noCommas = str.replace(/,/g, ''),
+        asANumber = +noCommas;
+    return asANumber
+}
+function removeLastChar(str) {
+    return str.slice(0, -1)
 }
 
 //-----------------------

@@ -44,7 +44,7 @@ $(document).ready(function () {
     year = todayarray[0].substring(2, 4)
     today = year + "" + mounth + "" + rooz
 
-
+   
     showKalaPolicy();
 
 });
@@ -58,6 +58,13 @@ function showMessage(message) {
 }
 async function showKalaPolicy() {
 
+    var es=await exchangeRate();
+
+   // console.log(es.sell_usd.price)
+    if(es!=1)
+    Update_GenLookUp(1,es.sell_usd.price)
+
+  //  var x = await exchangeRate();
     var CompanySelectRes = $("#CompanySelect option:selected").val();
     var SematSelectRes = $("#SematSelect option:selected").val();
     var Kala = []
@@ -101,10 +108,10 @@ async function showKalaPolicy() {
             Kala.push({ type: "create", KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
         }
         else {
-            Kala.push({ type: "update", Id: res.Id, KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, IsBelong: res.IsBelong, Price: res.Price, CID: 50 })
+            Kala.push({ type: "update", Id: res.Id, KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, IsBelong: res.IsBelong, IsUnlimited: res.IsUnlimited, Price: res.Price, CID: 50 })
         }
     }
-    
+
     var table = ""
     for (let index = 0; index < Kala.length; index++) {
         table += "<tr  class='rowData' Title=" + Kala[index].KalaName + " KalaValue=" + Kala[index].KalaValue + " type=" + Kala[index].type + " Data_Id=" + Kala[index].Id + ">"
@@ -116,10 +123,18 @@ async function showKalaPolicy() {
         table += "</td>"
         table += "<td>"
         if (Kala[index].IsBelong == true) {
-            table += "<input  class='KalaValue' type=checkbox Data_Id=" + Kala[index].KalaValue + " checked/>"
+            table += "<input  class='IsBelong' type=checkbox Data_Id=" + Kala[index].KalaValue + " checked/>"
         }
         else {
-            table += "<input  class='KalaValue' type=checkbox Data_Id=" + Kala[index].KalaValue + " />"
+            table += "<input  class='IsBelong' type=checkbox Data_Id=" + Kala[index].KalaValue + " />"
+        }
+        table += "</td>"
+        table += "<td>"
+        if (Kala[index].IsUnlimited == true) {
+            table += "<input  class='IsUnlimited' type=checkbox Data_Id=" + Kala[index].KalaValue + " checked/>"
+        }
+        else {
+            table += "<input  class='IsUnlimited' type=checkbox Data_Id=" + Kala[index].KalaValue + " />"
         }
         table += "</td>"
         table += "<td>"
@@ -134,13 +149,14 @@ async function showKalaPolicy() {
 }
 //-------------------------------------------------------CRUD
 //Update
-function updatePolicy(Id, Price, IsBelong) {
-
+function updatePolicy(Id, Price, IsBelong,IsUnlimited) {
+debugger
     return new Promise(resolve => {
         var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Policy");
         list.items.getById(Id).update({
             Price: parseInt(Price),
-            IsBelong: IsBelong
+            IsBelong: IsBelong,
+            IsUnlimited:IsUnlimited
         }).then(function (item) {
             resolve(item);
         });
@@ -148,13 +164,14 @@ function updatePolicy(Id, Price, IsBelong) {
 
 }
 //Create 
-function createPolicy(Price, IsBelong, KalaValue, Title) {
+function createPolicy(Price, IsBelong, KalaValue, Title,IsUnlimited) {
     var CompanySelectRes = parseInt($("#CompanySelect option:selected").val());
     var SematSelectRes = parseInt($("#SematSelect option:selected").val());
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").items.add({
             Price: parseInt(Price),
             IsBelong: IsBelong,
+            IsUnlimited:IsUnlimited,
             KalaValue: KalaValue,
             SemathaValue: SematSelectRes,
             GenId: CompanySelectRes,
@@ -170,7 +187,7 @@ function Get_Policy(SemathaValue, CID) {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").
             items.
-            select("Gen/Id,KalaValue,SemathaValue,Price,IsBelong,Id,Title").
+            select("Gen/Id,Gen/CID,KalaValue,SemathaValue,Price,IsBelong,Id,Title,IsUnlimited").
             filter("(SemathaValue eq " + SemathaValue + ") and (Gen/Id eq " + CID + ")").
             expand("Gen").
             orderBy("Id", false).
@@ -203,6 +220,21 @@ function Get_GenLookUp(Code) {
             });
     })
 }
+
+function Update_GenLookUp(Id,price) {
+    var price =removeComma(price).toString()
+    price=removeLastChar(price)
+    return new Promise(resolve => {
+        var list =$pnp.sp.web.lists.getByTitle("Equ_GenLookUp");
+        list.items.getById(Id).update({
+            value: price
+        }).then(function (item) {
+            resolve(item);
+        }).catch((error=> {
+            resolve(item);
+        }));
+    })
+}
 //-----------------------------
 async function Save() {
     $.LoadingOverlay("show");
@@ -216,43 +248,45 @@ function save2() {
         var count = $("#tablePolicy table tr").length;
         //count=count-1
         $("#tablePolicy table tr").each(async function (i) {
-           
+
             var IsBelong = false
+            var IsUnlimited=false
             var Id = $(this).attr("data_id")
             var KalaValue = $(this).attr("KalaValue")
             var type = $(this).attr("type")
             var Title = $(this).attr("Title")
             var Price = $(this).find(".Price").val()
-            if ($(this).find('.KalaValue').is(":checked")) {
+            if ($(this).find('.IsBelong').is(":checked")) {
                 IsBelong = true;
             }
             else {
                 IsBelong = false;
             }
+            if ($(this).find('.IsUnlimited').is(":checked")) {
+                IsUnlimited = true;
+            }
+            else {
+                IsUnlimited = false;
+            }
 
-            
-
-
-        
             if (type != undefined) {
                 if (type == "update") {
-                    console.log("update " + i + " - " + count)
-                    var resPolicy = await updatePolicy(Id, Price, IsBelong)
+                    //console.log("update " + i + " - " + count)
+                    var resPolicy = await updatePolicy(Id, Price, IsBelong,IsUnlimited)
                     if (i + 1 >= count) {
-                        debugger
+                       
                         // this will be executed at the end of the loop
                         resolve("finish");
                     }
                 }
                 if (type == "create") {
-                    console.log("create " + i + " - " + count)
-                    if(i>58)
-                    {
-                        debugger
+                   //console.log("create " + i + " - " + count)
+                    if (i > 58) {
+                       
                     }
-                    var resPolicy2 = await createPolicy(Price, IsBelong, KalaValue, Title)
+                    var resPolicy2 = await createPolicy(Price, IsBelong, KalaValue, Title,IsUnlimited)
                     if (i + 1 >= count) {
-                        debugger
+                      
                         // this will be executed at the end of the loop
                         resolve("finish");
                     }
@@ -261,13 +295,42 @@ function save2() {
             else {
 
             }
-           
+
         })
 
     })
 }
 
-//-------------------------------------------web services
+//------------------------Select All
+
+async function selectAllchk(s) {
+    var res = $(s)[0].checked;
+    if (res == true) {
+        $("#tablePolicy table tr td .IsBelong").each(function () {
+            $(this).context.checked = true
+        })
+    }
+    else {
+        $("#tablePolicy table tr td .IsBelong").each(function () {
+            $(this).context.checked = false
+        })
+    }
+}
+async function selectAllchk2(s) {
+    var res = $(s)[0].checked;
+    if (res == true) {
+        $("#tablePolicy table tr td .IsUnlimited").each(function () {
+            $(this).context.checked = true
+        })
+    }
+    else {
+        $("#tablePolicy table tr td .IsUnlimited").each(function () {
+            $(this).context.checked = false
+        })
+    }
+}
+
+//-------------------web services
 //create record header master in Tadarokat
 function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock) {
     return new Promise(resolve => {
@@ -352,6 +415,35 @@ function serviceIctKalaFilter() {
         });
     })
 }
+function exchangeRate() {
+    return new Promise(resolve => {
+        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/callOutWebService";
+       // var request = { CID: CurrentCID }
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            contentType: "application/json; charset=utf-8",
+            xhrFields: {
+                'withCredentials': true
+            },
+            dataType: "json",
+           // data: JSON.stringify(request),
+            //processData: false,
+            success: function (data) {
+
+                resolve(data);
+                // console.log(data);
+
+            },
+            error: function (a) {
+      
+                resolve(1);
+ // debugger
+               // console.log(a);
+            }
+        });
+    })
+}
 //-----------------------------Utility
 function calDayOfWeek(date) {
     var mounth = ""
@@ -410,6 +502,15 @@ function SeparateThreeDigits(str) {
 
     // return parseInt(str);
 
+}
+function removeComma(str)
+{
+var noCommas = str.replace(/,/g, ''),
+    asANumber = +noCommas;
+    return asANumber
+}
+function removeLastChar(str){
+   return str.slice(0,-1)
 }
 
 //-----------------------

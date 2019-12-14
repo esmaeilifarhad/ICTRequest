@@ -96,15 +96,7 @@ async function save() {
         showMessage("هیچ رکوردی برای ذخیره پیدا نشد.")
         return;
     }
-/*
-    for (let index = 0; index < _DetailsObjects.length; index++) {
-        var IsDuplicate = await GetGIG_MTH_Details(_DetailsObjects[index].pdpDark)
-        if (IsDuplicate.length > 0) {
-            showMessage("برای این روز " + _DetailsObjects[index].pdpDark + "  درخواست ثبت شده است")
-            return;
-        }
-    }
-*/
+
    // save
     $('#btnSave').prop('disabled', true);
     $.LoadingOverlay("show");
@@ -169,7 +161,6 @@ async function ShowIndividualprofile() {
    
     CurrentSematId=_PersonelInfo.PersonelInfo.SematId;
     _IctKalaFilter= await serviceIctKalaFilter();
-
     var Policy =await Get_Policy()
     for (let index = 0; index < _IctKalaFilter.length; index++) {
         
@@ -178,19 +169,13 @@ async function ShowIndividualprofile() {
            // Kala.push({ type: "create", KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
         }
         else {
-            if(res.IsBelong==true)
+            if(res.IsBelong==true || res.IsUnlimited==true)
             {
                 Kala.push({  KalaValue: _IctKalaFilter[index].KalaValue, KalaName: _IctKalaFilter[index].KalaName })  
             }
-           // Kala.push({ type: "update", Id: res.Id, KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, IsBelong: res.IsBelong, Price: res.Price, CID: 50 })
         }
-      //  debugger
-       
-        
-    }
-    console.log(Kala);
-    debugger
 
+    }
     var selectOption = "<select>"
     for (let index = 0; index < Kala.length; index++) {
         selectOption += "<option value=" + Kala[index].KalaValue + ">" + Kala[index].KalaName + "</option>"
@@ -282,7 +267,7 @@ function Get_Policy() {
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Policy").
             items.
-            select("Gen/CID,KalaValue,SemathaValue,Price,IsBelong,Id,Title").
+            select("Gen/CID,KalaValue,SemathaValue,Price,IsBelong,IsUnlimited,Id,Title").
             filter("(SemathaValue eq " + CurrentSematId + ") and (Gen/CID eq " + CurrentCID + ")").
             expand("Gen").
             get().
