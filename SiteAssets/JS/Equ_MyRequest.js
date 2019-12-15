@@ -33,7 +33,7 @@ $(document).ready(function () {
        
     }
     */
-    
+
     showCartabl();
 
 });
@@ -48,80 +48,115 @@ function showMessage(message) {
 async function showCartabl() {
     $("#tableres2 table  .rowData").remove()
     //---------------------
-    
+
     var Details = await Get_Details();
     // console.log(GIG_MTH_Details)
     // $("#Pname").append("<p>"+Details[0].MasterId.Title+"</p>");
     // $("#Pname").append("<p>"+Details[0].MasterId.DepName+"</p>");
     //---------------------
-
-
-    
-        var table = ""
-        for (let index = 0; index < Details.length; index++) {
-            table += "<tr class='rowData' Data_Id=" + Details[index].id + ">"
-            // table += "<td >"
-            // table += GIG_MTH_Details[index].step
-            // table += "</td>"
-            table += "<td col='pdpDark'>"
-            table += (index + 1)
+    var table = ""
+    for (let index = 0; index < Details.length; index++) {
+        table += "<tr class='rowData' Data_Id=" + Details[index].id + ">"
+        table += "<td col='pdpDark'>"
+        table += (index + 1)
+        table += "</td>"
+        table += "<td col='description'>"
+        table += splitString(Details[index].NameKala)[1]
+        table += "</td>"
+        table += "<td col='DayOfWeek'>"
+        table += Details[index].PlackNo
+        table += "</td>"
+        table += "<td >"
+        table += Details[index].StatusWF
+        table += "</td>"
+        var Log = await Get_Log(Details[index].Id);
+        if(Log.length>0)
+        {
+            table += "<td >"
+            table += "<input value='نمایش' type=button style='background-color: green!important;' onclick='ShowLog(" + Details[index].ID + ",this)'></input>"
             table += "</td>"
-            // table += "<td col='pdpDark'>"
-            // table += GIG_MTH_Details[index].MasterId.Title
-            // table += "</td>"
-            // table += "<td col='pdpDark'>"
-            // table += GIG_MTH_Details[index].MasterId.DepName
-            // table += "</td>"
-            table += "<td col='DayOfWeek'>"
-            table += Details[index].PlackNo
+        }
+        else
+        {
+            table += "<td >"
+            table += "<input value='موردی برای نمایش وجود ندارد' type=button style='background-color: #97161b!important;' onclick='ShowLog(" + Details[index].ID + ",this)'></input>"
             table += "</td>"
-            // table += "<td col='DayOfWeek'>"
-            // table += calDayOfWeek(Details[index].Date)
-            // table += "</td>"
-            table += "<td col='description'>"
-            table += splitString(Details[index].NameKala)[1]
-            table += "</td>"
-            // table += "<td col='isFood'>"
-            // table += (Details[index].IsFood == true) ? "<span style='color:green' class='fa fa-check  pointer'></span>" : "<span style='color:red' class='fa fa-remove  pointer'></span>"
-            // table += "</td>"
-             table += "<td >"
-            table += Details[index].StatusWF
-            table += "</td>"
+        }
+   
+        table += "</tr>"
+        
+        for (let i = 0; i < Log.length; i++) {
+            table += "<tr class=Log"+Details[index].Id+" hidden style='color:#37b140'>"
+            table += "<td>" +(i + 1)+ "</td>"
+            table += "<td>" + Log[i].ConfirmId.Title + " - (" + Log[i].UserSubmitter.Title + ")</td>"
+            table += "<td>" + Log[i].DateConfirm + "</td>"
+            table += "<td>" + Log[i].Result + "</td>"
+            table += "<td>" + Log[i].Dsc + "</td>"
             table += "</tr>"
         }
-        $("#tableres2 table").append(table);
-    
+
+    }
+    $("#tableres2 table").append(table);
+
 }
 //-------------------------------------------------------
 
 function Get_Details() {
-    return new Promise(resolve => {
-     
-        $pnp.sp.web.lists.
-        getByTitle("GIG_equ_Details").
-        items.select("MasterId/Id,MasterId/Semat,MasterId/PersonelId,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
-        expand("MasterId").
-        // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
-        filter("MasterId/PersonelId eq "+CurrentPID+"").
-        get().
-        then(function (items) {
-            if (items.length == 0) {
-                resolve("null")
-            }
-            else {
-                resolve(items);
-            }
-        });
 
-      
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.
+            getByTitle("GIG_equ_Details").
+            items.select("MasterId/Id,MasterId/Semat,MasterId/PersonelId,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
+            expand("MasterId").
+            // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
+            filter("MasterId/PersonelId eq " + CurrentPID + "").
+            get().
+            then(function (items) {
+                if (items.length == 0) {
+                    resolve("null")
+                }
+                else {
+                    resolve(items);
+                }
+            });
+
+
     });
+}
+function Get_Log(id) {
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.getByTitle("GIG_Equ_Log").
+            items.
+            select("ConfirmId/Id,ConfirmId/Title,DetailId/Id,DetailId/Title,Result,Dsc,DateConfirm,Id,UserSubmitter/Title,UserSubmitter/Id").
+            expand("ConfirmId,DetailId,UserSubmitter").
+            filter("DetailId/Id eq " + id + "").
+            orderBy("Id", true).
+            get().
+            then(function (item) {
+                resolve(item)
+            });
+    })
+}
+function ShowLog(id,thiss)
+{
+   var res= $(".Log"+id).attr("hidden");
+   if(res=="hidden")
+   {
+    $(".Log"+id).attr("hidden",false);
+   }
+   else
+   {
+    $(".Log"+id).attr("hidden",true);
+   }
+   
+   
 }
 
 //--------------------------
 function calDayOfWeek(date) {
- 
-        debugger
-    
+
+    debugger
+
     var mounth = ""
     var rooz = ""
     var arrayDate = date.split("/")

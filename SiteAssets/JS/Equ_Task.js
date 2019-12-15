@@ -12,6 +12,8 @@ var _UserInGroupos = []
 var _checkedItem = []
 var _usersInConfirm = []
 var _MojoodiAnbarICT = []
+var _MojoodyAnbarInPap = 0;
+var _MojoodyAnbarInPortal = 0;
 /*
 List Name :
 
@@ -169,6 +171,22 @@ function Get_Details(usersInConfirm) {
                     resolve(items);
                 }
             });
+    });
+}
+function Get_DetailsMojoodyAnbar(Detail) {
+    debugger
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.
+            getByTitle("GIG_equ_Details").
+            items.select("BuyStockTitle,exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
+            expand("MasterId").
+            //filter("(StatusWF eq 'درگردش') and (NameKalaValue eq '" + splitString(Detail.NameKala)[0] + "') and (DarkhastSN ne null) and (MasterId/CID eq " + CurrentCID + ") and (BuyStockTitle eq 'انبار') ").
+           // DarkhastSN بدون در نظر گرفته شدن 
+            filter("(StatusWF eq 'درگردش') and (NameKalaValue eq '" + splitString(Detail.NameKala)[0] + "') and (MasterId/CID eq " + CurrentCID + ") and (BuyStockTitle eq 'انبار') ").
+            get().
+            then(function (items) {
+                resolve(items);
+            }).catch(error => { console.log(error) });
     });
 }
 function Get_DetailsById(id) {
@@ -378,6 +396,7 @@ async function update_Details(_CurrentIdDetail, result, description, actionUser,
             Role: nextConfirmRes,
             PlackNo: PlackNo,
             BuyStock: BuyStock,
+            BuyStockTitle: splitString(BuyStock)[0],
             exchangeRate: _exchangeRate
         }).then(async function (item) {
             var Log = await Create_Log(Detail, Confirm, result, description)
@@ -407,63 +426,52 @@ function Update_GenLookUp(Id, price) {
 
 
 //-----------------------------
-// async function confirmForm() {
-//     $(this).prop('disabled', true);
-//     $.LoadingOverlay("show");
 
-//     $("#tableres2 table tr td input").each(function () {
-//         if ($(this).context.checked == true) {
-//             _checkedItem.push({ ID: $(this).attr("data_id") })
-//         }
-//     })
-//     for (let index = 0; index < _checkedItem.length; index++) {
-//         debugger
-//         var GIG_MTH_Detail = await getGIG_MTH_DetailsById(_checkedItem[index].ID);
-//         var res = await updateGIG_MTH_Details(_checkedItem[index].ID, "yes", GIG_MTH_Detail.step)
-//     }
-//     _checkedItem = [];
-//     showCartabl();
-
-//     $(this).prop('disabled', false);
-//     $.LoadingOverlay("hide");
-
-// }
-// async function rejectForm() {
-//     $("#tableres2 table tr td input").each(function () {
-//         if ($(this).context.checked == true) {
-//             _checkedItem.push({ ID: $(this).attr("data_id") })
-//         }
-//     })
-//     for (let index = 0; index < _checkedItem.length; index++) {
-//         var GIG_MTH_Detail = await getGIG_MTH_DetailsById(_checkedItem[index].ID);
-//         var res = await updateGIG_MTH_Details(_checkedItem[index].ID, "no", GIG_MTH_Detail.step)
-//     }
-//     _checkedItem = [];
-//     showCartabl();
-// }
 async function save() {
-
-
     var description = ""
-    description += $("#windowICT .table .description").val();
-    description += $("#window .table .description").val()
-    description += $("#windowJAM .table .description").val()
-    description += $("#windowAML .table .description").val()
-    description += $("#windowREQ .table .description").val()
+    description += $("#window .table .description textarea").val()
+    description += $("#windowJAM .table .description textarea").val()
+    description += $("#windowAML .table .description textarea").val()
+    description += $("#windowREQ .table .description textarea").val()
+    description += $("#windowICT .table .description textarea").val()
+ 
+
 
     var result = $("input[name='decide']:checked").val()
-    var BuyStock = $("input[name='BuyStock']:checked").val()
 
+    var BuyStock = $("input[name='BuyStock']:checked").val()
     var actionUser = _spPageContextInfo.userId;
     var EstelamGheymat = $("#EstelamGheymat").val()
-
     var PlackNo = $("#selectOptionAmval option:selected").text();
-
     var Detail = await Get_DetailsById(_CurrentIdDetail)
     var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
 
+    if (confirm[0].Role == "ICT") {
+
+        if (EstelamGheymat == "") {
+            alert("لطفا قیمت فعلی کالا را مشخص نمایید");
+            return
+        }
+
+        if (BuyStock == "" || BuyStock == undefined) {
+            alert("لطفا مشخص نمایید کالا را قصد دارید از انبار تهیه نمایید و یا خرید نمایید.");
+            return
+        }
+
+        var CurrentMojoody = _MojoodyAnbarInPap - _MojoodyAnbarInPortal
+        if (CurrentMojoody < 1 && splitString(BuyStock)[0] == 'انبار') {
+            alert("در حال حاضر کالایی در انبار وجود ندارد"+"\n"+" موجودی انبار در پپ "+_MojoodyAnbarInPap.toString()+"\n"+" کالاهای در گردش "+_MojoodyAnbarInPortal.toString()+"\n"+_MojoodyAnbarInPap.toString() +"-"+ _MojoodyAnbarInPortal.toString()+"="+(_MojoodyAnbarInPap-_MojoodyAnbarInPortal).toString());
+            return
+        }
+
+
+    }
     if (result == undefined && confirm[0].Role != "JAM") {
         alert("لطفا نتیجه را مشخص نمایید");
+        return
+    }
+    if(result=="عدم تایید" && description.trim()==""){
+        alert("لطفا در صورت عدم تایید توضیحات را پر نمایید.");
         return
     }
     else {
@@ -524,19 +532,27 @@ async function selectAllchk(s) {
 
 }
 async function Show(id) {
-
     _CurrentIdDetail = id
     var Detail = await Get_DetailsById(id)
     var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
     var Log = await Get_Log(_CurrentIdDetail)
+
     var Policy = await Get_Policy(Detail)
-    //------------------------update exchange rate
+    var GenLookUp = await Get_GenLookUpById(1)
+
     if (confirm[0].Role == "ICT") {
+        //------------------------update exchange rate
         //  var ER = await exchangeRate();
         // Update_GenLookUp(1, ER.sell_usd.price)
 
         _MojoodiAnbarICT = [];
         _MojoodiAnbarICT = await Mojoodi_AnbarICT(CurrentCID);
+
+        resultGet_DetailsMojoodyAnbar = await Get_DetailsMojoodyAnbar(Detail)
+        _MojoodyAnbarInPortal = resultGet_DetailsMojoodyAnbar.length
+        $(".DetailsMojoodyAnbar span").remove();
+        $(".DetailsMojoodyAnbar").append("<span>" + _MojoodyAnbarInPortal + "</span>");
+
         var res = _MojoodiAnbarICT.find(x => x.KalaID == splitString(Detail.NameKala)[0]);
 
         if (res == undefined) {
@@ -544,12 +560,11 @@ async function Show(id) {
         }
         else {
             _Mojoodi_AnbarICT = parseInt(res.mojoodi)
+            _MojoodyAnbarInPap = parseInt(res.mojoodi)
         }
 
     }
-    //--------------------
-    var GenLookUp = await Get_GenLookUpById(1)
-
+    //-----------------------------------------------create log strart
     var table = "<table class='table'>"
     table += "<tr><th>واحد</th><th>تاریخ</th><th>نتیجه</th><th>توضیحات</th></tr>"
     for (let index = 0; index < Log.length; index++) {
@@ -562,7 +577,6 @@ async function Show(id) {
         table += "</tr>"
     }
     table += "</table>"
-
     $("#FolderLog table").remove();
     $("#FolderLogICT table").remove();
     $("#FolderLogJAM table").remove();
@@ -574,7 +588,7 @@ async function Show(id) {
     $("#FolderLogJAM").append(table);
     $("#FolderLogAML").append(table);
     $("#FolderLogREQ").append(table);
-
+    //--------------------------------------------------create log end
     $(".Price span").remove();
     $(".Confirm span").remove();
     $(".PersonelId span").remove();
@@ -589,10 +603,13 @@ async function Show(id) {
     $(".BuyStock span").remove();
     $(".AmvalPersonel select").remove();
     $(".Mojoodi_AnbarICT span").remove();
+    $(".description textarea").remove();
+    $(".rdbConfirm div").remove();
 
 
 
-    $(".description").val();
+
+
     $("#EstelamGheymat").val(Detail.EstelamGheymat);
 
     if (splitString(Detail.BuyStock)[0] == "خرید") {
@@ -605,6 +622,8 @@ async function Show(id) {
         $(".Price").append((Policy[0].IsUnlimited == true) ? "<span>نامحدود</span>" : "<span>" + SeparateThreeDigits(parseInt(GenLookUp.value) * parseInt(Policy[0].Price)) + "</span>");
     }
 
+    $(".description").append("<textarea  name='comment' form='usrform'    placeholder='توضیحات ...'></textarea>");
+    $(".rdbConfirm").append("<div><input type='radio' name='decide' value='تایید' />تایید  <input type='radio' name='decide' value='عدم تایید' />عدم تایید</td></div>");
     $(".EstelamGheymated").append("<span>" + SeparateThreeDigits(Detail.EstelamGheymat) + "</span>");
     $(".Confirm").append("<span>" + confirm[0].Title + "</span>");
     $(".Mojoodi_AnbarICT").append((_Mojoodi_AnbarICT == null) ? "<span>در انبار چنین کالایی تعریف نشده است</span>" : "<span>" + _Mojoodi_AnbarICT + "</span>");
@@ -618,7 +637,7 @@ async function Show(id) {
     $(".BuyStock").append("<span>" + splitString(Detail.BuyStock)[0] + "</span>");
     $(".NameKala").append("<span>" + splitString(Detail.NameKala)[1] + "</span>");
 
-
+    //----------------------------------------------show windows
     if (confirm[0].Role == "ICT") {
         _exchangeRate = parseInt(GenLookUp.value)
         showWindowsICT()
@@ -627,7 +646,9 @@ async function Show(id) {
 
         var ShowAmvalPersonel = await serviceShowAmvalPersonel(Detail.MasterId.CID, Detail.MasterId.PersonelId);
         var AmvalPersonelSelect = "<select id='selectOptionAmval'>"
+        AmvalPersonelSelect += "<option value='1'>این کالا اموالی نمیباشد</option>"
         for (let index = 0; index < ShowAmvalPersonel.length; index++) {
+
             AmvalPersonelSelect += "<option value=" + ShowAmvalPersonel[index].PlackNo + ">" + ShowAmvalPersonel[index].MoshakhasatKala + " - " + ShowAmvalPersonel[index].PlackNo + "</option>"
         }
         AmvalPersonelSelect += "</select>"
@@ -645,7 +666,7 @@ async function Show(id) {
     }
 
 }
-//----------------------------Modal Dialog Form
+//----------------------------------------------------Modal Dialog Form
 function showWindows() {
     var myWindow = $("#window"),
         undo = $("#newRecord");
@@ -736,7 +757,7 @@ function showWindowsREQ() {
         }
     }).data("kendoWindow").center().open();
 }
-//-------------------------------------------web services
+//----------------------------------------------------web services
 //create record header master in Tadarokat
 function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock) {
 
@@ -850,7 +871,7 @@ function Mojoodi_AnbarICT(CID) {
         });
     })
 }
-//-----------------------------Utility
+//---------------------------------------------------------Utility
 function calDayOfWeek(date) {
     var mounth = ""
     var rooz = ""

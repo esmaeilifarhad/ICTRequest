@@ -102,11 +102,11 @@
         <div id="example">
             <div id="window" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                    <div class="col-sm-6 styleLog">
                         <br>
                         <div id="FolderLog"></div>
                     </div>
-                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                    <div class="col-sm-5 styleDecision">
                         <table class="table">
                             <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
                                 <td class="onvan">مسئول</td>
@@ -142,15 +142,13 @@
                             </tr>
                             <tr>
                                 <td class="onvan">توضیحات</td>
-                                <td>
-                                    <textarea class="description" name="comment" form="usrform"
-                                        placeholder="توضیحات ..."></textarea>
-                                </td>
+                                <td class="description">
                             </tr>
                             <tr>
                                 <td class="onvan">نتیجه</td>
-                                <td><input type="radio" name="decide" value="تایید" />تایید
-                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                                <td class="rdbConfirm"></td>
+                                <!-- <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td> -->
                             </tr>
 
                             <tr>
@@ -174,11 +172,11 @@
         <div id="exampleICT">
             <div id="windowICT" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                    <div class="col-sm-6 styleLog">
                         <br>
                         <div id="FolderLogICT"></div>
                     </div>
-                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                    <div class="col-sm-5 styleDecision">
                         <table class="table">
                             <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
                                 <td class="onvan">مسئول</td>
@@ -220,12 +218,16 @@
 
 
                             <tr>
-                                <td class="onvan">قیمت کالا</td>
-                                <td class="EstelamGheymat"><input id="EstelamGheymat" type="text" /></td>
+                                <td class="onvan">قیمت فعلی کالا</td>
+                                <td class="EstelamGheymat"><input id="EstelamGheymat" type="number" /></td>
                             </tr>
                             <tr>
                                 <td class="onvan">موجودی انبار</td>
                                 <td class="Mojoodi_AnbarICT"></td>
+                            </tr>
+                            <tr>
+                                <td class="onvan">موجودی در گردش</td>
+                                <td class="DetailsMojoodyAnbar"></td>
                             </tr>
                             <tr>
                                 <td class="onvan">درخواست از انبار\خرید</td>
@@ -234,15 +236,14 @@
                             </tr>
                             <tr>
                                 <td class="onvan">توضیحات</td>
-                                <td>
-                                    <textarea class="description" name="comment" form="usrform"
-                                        placeholder="توضیحات ..."></textarea>
+                                <td class="description">
                                 </td>
                             </tr>
                             <tr>
                                 <td class="onvan">نتیجه</td>
-                                <td><input type="radio" name="decide" value="تایید" />تایید
-                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                                <td class="rdbConfirm"></td>
+                                <!-- <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td> -->
                             </tr>
 
                             <tr>
@@ -265,11 +266,11 @@
         <div id="exampleJAM">
             <div id="windowJAM" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                    <div class="col-sm-6 styleLog">
                         <br>
                         <div id="FolderLogJAM"></div>
                     </div>
-                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                    <div class="col-sm-5 styleDecision">
                         <table class="table">
                             <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
                                 <td class="onvan">مسئول</td>
@@ -310,10 +311,7 @@
                             </tr>
                             <tr>
                                 <td class="onvan">توضیحات</td>
-                                <td>
-                                    <textarea class="description" name="comment" form="usrform"
-                                        placeholder="توضیحات ..."></textarea>
-                                </td>
+                                <td class="description">
                             </tr>
                             <!-- <tr>
                                 <td class="onvan">نتیجه</td>
@@ -340,11 +338,11 @@
         <div id="exampleAML">
             <div id="windowAML" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                    <div class="col-sm-6 styleLog">
                         <br>
                         <div id="FolderLogAML"></div>
                     </div>
-                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                    <div class="col-sm-5 styleDecision" ;>
                         <table class="table">
                             <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
                                 <td class="onvan">مسئول</td>
@@ -395,15 +393,13 @@
                             </tr>
                             <tr>
                                 <td class="onvan">توضیحات</td>
-                                <td>
-                                    <textarea class="description" name="comment" form="usrform"
-                                        placeholder="توضیحات ..."></textarea>
-                                </td>
+                                <td class="description">
                             </tr>
                             <tr>
                                 <td class="onvan">نتیجه</td>
-                                <td><input type="radio" name="decide" value="تایید" />تایید
-                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                                <td class="rdbConfirm"></td>
+                                <!-- <td><input type="radio" name="decide" value="تایید" />تایید
+                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td> -->
                             </tr>
 
                             <tr>
@@ -426,20 +422,21 @@
         <div id="exampleREQ">
             <div id="windowREQ" style="display:none">
                 <div class="row">
-                    <div class="col-sm-6" style="background-color:#eac0c8;">
+                    <div class="col-sm-6 styleLog">
                         <br>
                         <div id="FolderLogREQ"></div>
                     </div>
-                    <div class="col-sm-5" style="background-color:#a2c4dc;">
+                    <div class="col-sm-5 styleDecision" >
                         <table class="table">
                             <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
                                 <td class="onvan">مسئول</td>
                                 <td class="Confirm"></td>
                             </tr>
                             <tr>
-                                <td style="color: red" colspan="2" class="onvan">کاربر گرامی لطفا شماره پلاک خود را با
+                                <td style="color: red" colspan="2" class="onvan">کاربر گرامی 
+                                    در صورتی که کالای شما اموالی است. لطفا شماره پلاک خود را با
                                     کالای تحویل گرفته شده چک نمایید و در صورت درست بودن آنرا تایید نمایید /
-                               .و در صورت اشتباه آنرا عدم تایید نمایید
+                                    .و در صورت اشتباه آنرا عدم تایید نمایید
                                 </td>
                             </tr>
                             <tr>
@@ -471,24 +468,13 @@
                                 <td class="onvan">کد اموال</td>
                                 <td class="PlackNo"></td>
                             </tr>
-
-
-                            <!-- <tr>
-                                    <td class="onvan">درخواست از انبار\خرید</td>
-                                    <td><input type="radio" name="BuyStock" value="2" />انبار
-                                        <input type="radio" name="BuyStock" value="1" />خرید</td>
-                                </tr> -->
                             <tr>
                                 <td class="onvan">توضیحات</td>
-                                <td>
-                                    <textarea class="description" name="comment" form="usrform"
-                                        placeholder="توضیحات ..."></textarea>
-                                </td>
+                                <td class="description">
                             </tr>
                             <tr>
                                 <td class="onvan">نتیجه</td>
-                                <td><input type="radio" name="decide" value="تایید" />تایید
-                                    <input type="radio" name="decide" value="عدم تایید" />عدم تایید</td>
+                                <td class="rdbConfirm"></td>
                             </tr>
 
                             <tr>

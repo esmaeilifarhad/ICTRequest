@@ -1,20 +1,18 @@
 #WebPartWPQ2_ChromeTitle,#pageTitle{
   display: none;
 }
- /*.tblH {
-    color: black;
-}*/
-/*
- .tblH td,th {
-    padding: 4px;
-    border: 1px solid black;
+.styleLog{
+  background-image: linear-gradient(to bottom right, #f7f4f4, #940909);
+  border-radius: 29px;
 }
-*/
-/*
-button{
-  background-color: #ce4415!important
+.styleDecision{
+  background-image: linear-gradient(to bottom right, #d8ffff, #0072c6);
+  border-radius: 29px;
 }
-*/
+ .k-window-titlebar ,.k-header {
+  text-align: center;
+} 
+
 #FolderLog th,td{
   text-align: right
 }
@@ -33,9 +31,7 @@ button{
  #tableres2 th {
     text-align: right
 }
-#imgFatLevel{
-    text-align: center
-}
+
 .onvan{
     font-weight: bold;
 }
@@ -47,7 +43,7 @@ h3 {
     text-shadow: 1px 1px 2px rgb(233, 214, 45), 0 0 25px rgb(115, 115, 212), 0 0 5px rgb(64, 219, 134);
   }
 
- .main #tableres {
+ .k-window-titlebar span {
 
    /* background-color:white;*/
     -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
@@ -71,75 +67,15 @@ h3 {
     font-weight: bolder;
   color:blue;
   }
-#message .message{
-  -webkit-animation-name: showMessage; /* Safari 4.0 - 8.0 */
-  -webkit-animation-duration:8s; /* Safari 4.0 - 8.0 */
-  animation-name: showMessage;
-  animation-duration: 8s;
- 
-  font-weight: bolder;
-  color: red;
-}
-  /* Safari 4.0 - 8.0 */
-  @-webkit-keyframes showMessage {
-    0%   { right:0px; top:0px;}
-    25%  { right:200px; top:20px;}
-    50%  { right:300px; top:40px;}
-    75%  { right:400px; top:60px;}
-    100% { right:0px; top:0px;}
-  }
-  
-  /* Standard syntax */
-  @keyframes showMessage {
-    0%   {color: black }
-    25%  { /*text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;*/ }
-    50%  { /*text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;*/ }
-    75%  { }
-    100% { left:500px; top:500px;color: red;font-weight: bolder}
-  }
 
 
-  .main #imgFatLevel {
-      /*
-    width: 100px;
-    height: 100px;
-    background-color: red;*/
-    position: relative;
-    -webkit-animation-name: example2; /* Safari 4.0 - 8.0 */
-    -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
-    -webkit-animation-delay: 2s; /* Safari 4.0 - 8.0 */
-    animation-name: example2;
-    animation-duration: 4s;
-    animation-delay: -2s;
- 
-}
-  /* Safari 4.0 - 8.0 */
-  @-webkit-keyframes example2 {
-    0%   {background-color:red; left:0px; top:0px;}
-    25%  {background-color:yellow; left:200px; top:0px;}
-    50%  {background-color:blue; left:200px; top:200px;}
-    75%  {background-color:green; left:0px; top:200px;}
-    100% {background-color:red; left:0px; top:0px;}
-  }
-  
-  /* Standard syntax */
-  @keyframes example2 {
-    0%   { left:0px; top:0px;}
-    25%  { left:200px; top:20px;}
-    50%  { left:200px; top:40;}
-    75%  { left:0px; top:60;}
-    100% { left:0px; top:0px;}
-  }
-  .main h3 {
-    /*
-  width: 100px;
-  height: 100px;
-  background-color: red;*/
+
+  .k-window-titlebar span {
   position: relative;
-  -webkit-animation-name: moveh3; /* Safari 4.0 - 8.0 */
+  -webkit-animation-name: k-window-titlebar; /* Safari 4.0 - 8.0 */
   -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
   -webkit-animation-delay: 2s; /* Safari 4.0 - 8.0 */
-  animation-name: moveh3;
+  animation-name: k-window-titlebar;
   animation-duration: 4s;
   animation-delay: -2s;
 
@@ -147,7 +83,7 @@ h3 {
 
   /* Safari 4.0 - 8.0 */
   
-  @-webkit-keyframes moveh3 {
+  @-webkit-keyframes k-window-titlebar {
     0%   { right:0px; top:0px;}
     25%  { right:200px; top:20px;}
     50%  { right:300px; top:40px;}
@@ -156,7 +92,7 @@ h3 {
   }
   
   /* Standard syntax */
-  @keyframes moveh3 {
+  @keyframes k-window-titlebar {
     0%   { right:0px; top:0px;color:red}
     25%  { right:200px; top:0px;color:blue}
     50%  { right:300px; top:0px;}
@@ -164,7 +100,6 @@ h3 {
     100% { right:0px; top:0px;}
   }
   .moshakhast{
-   /* background-color:#9fbb83;*/
     background-image: linear-gradient(to right, rgba(255,0,0,0), #9270e2);
   }
   .moshakhast tr td :hover{
@@ -172,21 +107,12 @@ h3 {
   }
   #tableres{
     background-color: beige;
-   /* background-color: red;*/ /* For browsers that do not support gradients */
-   /* background-image: linear-gradient(to bottom right, red, yellow); */
     background-image: linear-gradient(to bottom right, #a3bcf1, #f17356);
   }
   #tableres2{
     background-color: beige;
-   /* background-color: red;*/ /* For browsers that do not support gradients */
-   /* background-image: linear-gradient(to bottom right, red, yellow); */
     background-image: linear-gradient(to bottom right, #d8ffff, #0072c6);
 
   }
-  #dore{
-    background-color: beige;
-   /* background-color: red;*/ /* For browsers that do not support gradients */
-   /* background-image: linear-gradient(to bottom right, red, yellow); */
-    background-image: linear-gradient(to bottom right, #f16a6a, #613af0);
-  }
+
 
