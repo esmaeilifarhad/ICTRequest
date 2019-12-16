@@ -106,8 +106,11 @@ async function save() {
     for (let index = 0; index < _DetailsObjects.length; index++) {
         var GIG_MTH_Detail = await CreateGIG_equ_Details(GIG_equ_Request, _DetailsObjects[index]);
     }
-    showMessage("درخواست شما با موفقیت ذخیره شد")
-    $("#message").append("<br/><a target='_blank' href='https://portal.golrang.com/ictrequests/Pages/Equ_MyRequest.aspx'>برای مشاهده درخواست های خود کلیک نمایید</a>");
+    
+    $("#message .tblRow").remove()
+    $("#message table").append("<tr class='tblRow'><td>درخواست شما با موفقیت ذخیره شد</td></tr>");
+    $("#message table").append("<tr class='tblRow'><td><a target='_blank' href='https://portal.golrang.com/ictrequests/Pages/Equ_MyRequest.aspx'>برای مشاهده درخواست های خود کلیک نمایید</a></td></tr>");
+
     
     $.LoadingOverlay("hide");
    // $('#btnSave').prop('disabled', true);
@@ -203,11 +206,8 @@ async function ShowIndividualprofile() {
 
 }
 function showMessage(message) {
-  
-    $("#message p").remove()
-    $("#message a").remove()
-    // setTimeout(function () { $("#message p").remove() }, 5000);
-    $("#message").append("<p class='message'>" + message + "</p>");
+    $("#message .tblRow").remove()
+    $("#message table").append("<tr class='tblRow'><td>" + message + "</td></tr>");
 }
 //-------------------------------------------------------
 function CreateGIG_equ_Request() {
