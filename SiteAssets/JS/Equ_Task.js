@@ -55,13 +55,11 @@ $(document).ready(function () {
 
 //-------------------------------------------------------
 
-function showMessage(message) {
-    $("#message p").remove()
-    // setTimeout(function () { $("#message p").remove() }, 5000);
-    $("#message").append("<p class='message'>" + message + "</p>");
-}
+// function showMessage(message) {
+//     $("#message p").remove()
+//     $("#message").append("<p class='message'>" + message + "</p>");
+// }
 async function showCartabl() {
-
     $("#tableres2 table  .rowData").remove()
     //---------------------
     var Confirm = await Get_Confirm();
@@ -119,6 +117,9 @@ async function showCartabl() {
         }
         $("#tableres2 table").append(table);
     }
+    //-------update exchangeRate 
+    var ER = await exchangeRate();
+    Update_GenLookUp(1, ER.sell_usd.price)
 
 }
 //-------------------------------------------------------CRUD
@@ -158,7 +159,7 @@ function Get_Details(usersInConfirm) {
         // console.log(filterStatusWF);
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
+            items.select("IsAmvaly,exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
             expand("MasterId").
             // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
             filter(filterStatusWF).
@@ -174,15 +175,14 @@ function Get_Details(usersInConfirm) {
     });
 }
 function Get_DetailsMojoodyAnbar(Detail) {
-    debugger
     return new Promise(resolve => {
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("BuyStockTitle,exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
+            items.select("IsAmvaly,BuyStockTitle,exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Role,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
             expand("MasterId").
             //filter("(StatusWF eq 'درگردش') and (NameKalaValue eq '" + splitString(Detail.NameKala)[0] + "') and (DarkhastSN ne null) and (MasterId/CID eq " + CurrentCID + ") and (BuyStockTitle eq 'انبار') ").
-           // DarkhastSN بدون در نظر گرفته شدن 
-            filter("(StatusWF eq 'درگردش') and (NameKalaValue eq '" + splitString(Detail.NameKala)[0] + "') and (MasterId/CID eq " + CurrentCID + ") and (BuyStockTitle eq 'انبار') ").
+            // DarkhastSN بدون در نظر گرفته شدن 
+            filter("(StatusWF eq 'درگردش') and (NameKalaValue eq '" + splitString(Detail.NameKala)[0] + "') and (MasterId/CID eq " + CurrentCID + ") and (BuyStockTitle eq 'انبار') and (Role ne 'ICT') ").
             get().
             then(function (items) {
                 resolve(items);
@@ -194,7 +194,7 @@ function Get_DetailsById(id) {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
             items.
             getById(id).
-            select("exchangeRate,BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
+            select("IsAmvaly,exchangeRate,BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
             expand("MasterId").
             get().
             then(function (item) {
@@ -297,114 +297,52 @@ function Get_ConfirmByStep(step, CID) {
             });
     });
 }
-async function update_Details(_CurrentIdDetail, result, description, actionUser, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock) {
-    var StatusWF = Detail.StatusWF
-    var varStep = Detail.step
-    var DarkhastSN = Detail.DarkhastSN
-    var ResDarkhastSN = ""
-    var Policy = await Get_Policy(Detail)
-    if (Policy.length == 0 && Confirm[0].Role == "ICT") {
-        alert("لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید")
-        $.LoadingOverlay("hide");
-        return;
-    }
-    if (Policy.length > 0) {
-        var PriceKala = _exchangeRate * Policy[0].Price
-    }
+async function update_Details(_CurrentIdDetail, result, description, varStep, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock, StatusWF, DarkhastSN, nextConfirm) {
 
-    if (result == "تایید") {
-        if (Confirm[0].Role == "ICT") {
-            debugger
-            if (parseInt(EstelamGheymat) > PriceKala && Policy[0].IsUnlimited == false) {
-
-                var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
-                if (res == true) {
-                    varStep = Detail.step + 1
-                }
-                else {
-                    $.LoadingOverlay("hide");
-                    return;
-                }
-            }
-            else {
-                /*
-                +2 جمع میشود که مرحله مدیر عامل رد شود
-                */
-                varStep = Detail.step + 2
-
-                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
-
-            }
-
-        }
-        else if (Confirm[0].Role == "AML") {
-            varStep = Detail.step + 1
-
-            ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
-
-        }
-        else if (Confirm[0].IsFinish == true) {
-            StatusWF = "خاتمه یافته"
-            varStep = Detail.step + 1
-
-        }
-        else {
-            varStep = Detail.step + 1
-        }
-    }
-    else if (result == "عدم تایید") {
-        // StatusWF = "تایید نشده"
-        varStep = Detail.step - 1
-    }
-    else {
-        alert("call to IT")
-        return;
-    }
-
-
-    if (varStep == 0) {
-        StatusWF = "تایید نشده";
-    }
-    else {
-        //  StatusWF = "درگردش";
-    }
-
-    /*پیدا کردن تایید کننده بعدی */
-
-    var nextConfirm = await Get_ConfirmByStep(varStep, Detail.MasterId.CID)
     var nextConfirmRes = nextConfirm.length == 0 ? "Finish" : nextConfirm[0].Role
 
-
-    var DarkhastSN2 = ""
-    if (ResDarkhastSN == null || ResDarkhastSN == "") {
-        DarkhastSN2 = Detail.DarkhastSN
+    if (nextConfirm.length == 0) {
+        return new Promise(resolve => {
+            var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");
+            list.items.getById(_CurrentIdDetail).update({
+                step: varStep,
+                StatusWF: StatusWF,
+                DarkhastSN: DarkhastSN,
+                EstelamGheymat: EstelamGheymat,
+                Role: nextConfirmRes,
+                PlackNo: PlackNo,
+                BuyStock: BuyStock,
+                BuyStockTitle: splitString(BuyStock)[0],
+                exchangeRate: _exchangeRate,
+               // ConfirmIdId: Confirm[0].Id
+            }).then(async function (item) {
+                var Log = await Create_Log(Detail, Confirm, result, description)
+                resolve(item)
+            });
+        })
     }
     else {
-        DarkhastSN2 = ResDarkhastSN.DarkhastSN
+        return new Promise(resolve => {
+            var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");
+            list.items.getById(_CurrentIdDetail).update({
+                step: varStep,
+                StatusWF: StatusWF,
+                DarkhastSN: DarkhastSN,
+                EstelamGheymat: EstelamGheymat,
+                Role: nextConfirmRes,
+                PlackNo: PlackNo,
+                BuyStock: BuyStock,
+                BuyStockTitle: splitString(BuyStock)[0],
+                exchangeRate: _exchangeRate,
+                ConfirmIdId: nextConfirm[0].Id
+            }).then(async function (item) {
+                var Log = await Create_Log(Detail, Confirm, result, description)
+                resolve(item)
+            });
+        })
+
     }
-    if (_exchangeRate == 0) {
-        _exchangeRate = Detail.exchangeRate;
-    }
 
-    return new Promise(resolve => {
-        var list = $pnp.sp.web.lists.getByTitle("GIG_equ_Details");
-        list.items.getById(_CurrentIdDetail).update({
-            step: varStep,
-            StatusWF: StatusWF,
-            DarkhastSN: DarkhastSN2,
-            EstelamGheymat: EstelamGheymat,
-            Role: nextConfirmRes,
-            PlackNo: PlackNo,
-            BuyStock: BuyStock,
-            BuyStockTitle: splitString(BuyStock)[0],
-            exchangeRate: _exchangeRate
-        }).then(async function (item) {
-            var Log = await Create_Log(Detail, Confirm, result, description)
-            resolve(item)
-
-        });
-
-    })
 
 
 }
@@ -422,60 +360,64 @@ function Update_GenLookUp(Id, price) {
         }));
     })
 }
-//Delete
-
 
 //-----------------------------
 
 async function save() {
+    //-----------------------------get value from fields
     var description = ""
     description += $("#window .table .description textarea").val()
     description += $("#windowJAM .table .description textarea").val()
     description += $("#windowAML .table .description textarea").val()
     description += $("#windowREQ .table .description textarea").val()
     description += $("#windowICT .table .description textarea").val()
- 
-
-
     var result = $("input[name='decide']:checked").val()
-
+    //-----------------------------
     var BuyStock = $("input[name='BuyStock']:checked").val()
     var actionUser = _spPageContextInfo.userId;
     var EstelamGheymat = $("#EstelamGheymat").val()
     var PlackNo = $("#selectOptionAmval option:selected").text();
+    //---------------------------get data from list
     var Detail = await Get_DetailsById(_CurrentIdDetail)
-    var confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
+    var Confirm = await Get_ConfirmByStep(Detail.step, Detail.MasterId.CID)
+    var Policy = await Get_Policy(Detail)
+    //-------------------------------validation
 
-    if (confirm[0].Role == "ICT") {
+    if (Confirm[0].Role == "ICT") {
 
-        if (EstelamGheymat == "") {
+        if (EstelamGheymat == "" && result == "تایید") {
             alert("لطفا قیمت فعلی کالا را مشخص نمایید");
             return
         }
 
-        if (BuyStock == "" || BuyStock == undefined) {
+        if ((BuyStock == "" || BuyStock == undefined) && result == "تایید") {
             alert("لطفا مشخص نمایید کالا را قصد دارید از انبار تهیه نمایید و یا خرید نمایید.");
             return
         }
 
         var CurrentMojoody = _MojoodyAnbarInPap - _MojoodyAnbarInPortal
-        if (CurrentMojoody < 1 && splitString(BuyStock)[0] == 'انبار') {
-            alert("در حال حاضر کالایی در انبار وجود ندارد"+"\n"+" موجودی انبار در پپ "+_MojoodyAnbarInPap.toString()+"\n"+" کالاهای در گردش "+_MojoodyAnbarInPortal.toString()+"\n"+_MojoodyAnbarInPap.toString() +"-"+ _MojoodyAnbarInPortal.toString()+"="+(_MojoodyAnbarInPap-_MojoodyAnbarInPortal).toString());
+        if (CurrentMojoody < 1 && splitString(BuyStock)[0] == 'انبار' && result == "تایید") {
+            alert("در حال حاضر کالایی در انبار وجود ندارد" + "\n" + " موجودی انبار در پپ " + _MojoodyAnbarInPap.toString() + "\n" + " کالاهای در گردش " + _MojoodyAnbarInPortal.toString() + "\n" + _MojoodyAnbarInPap.toString() + "-" + _MojoodyAnbarInPortal.toString() + "=" + (_MojoodyAnbarInPap - _MojoodyAnbarInPortal).toString());
             return
         }
-
+        if (Policy.length == 0 && result == "تایید") {
+            alert("لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید")
+            $.LoadingOverlay("hide");
+            return;
+        }
 
     }
-    if (result == undefined && confirm[0].Role != "JAM") {
+    if (result == undefined && Confirm[0].Role != "JAM") {
         alert("لطفا نتیجه را مشخص نمایید");
         return
     }
-    if(result=="عدم تایید" && description.trim()==""){
+    if (result == "عدم تایید" && description.trim() == "") {
         alert("لطفا در صورت عدم تایید توضیحات را پر نمایید.");
         return
     }
     else {
         $.LoadingOverlay("show");
+
         if (EstelamGheymat == null || EstelamGheymat == "") {
             EstelamGheymat = Detail.EstelamGheymat
         }
@@ -485,26 +427,109 @@ async function save() {
         if (BuyStock == null || BuyStock == "") {
             BuyStock = Detail.BuyStock
         }
-
-        if (confirm[0].Role == "JAM") {
+        /*به علت اینکه جمعدار دکمه تایید و عدم تایید نداره همیشه آنرا تایید در نظر میگیریم*/
+        if (Confirm[0].Role == "JAM") {
             result = "تایید"
         }
+        //-----------------------------**************
 
-        var DetailRes = await update_Details(_CurrentIdDetail, result, description, actionUser, Detail, confirm, EstelamGheymat, PlackNo, BuyStock)
+        var StatusWF = Detail.StatusWF
+        var varStep = Detail.step
+        var DarkhastSN = Detail.DarkhastSN
+
+        var ResDarkhastSN = ""
+
+        if (Policy.length > 0) {
+            var PriceKala = _exchangeRate * Policy[0].Price
+        }
+
+        if (result == "تایید") {
+            if (Confirm[0].Role == "ICT") {
+
+                if (parseInt(EstelamGheymat) > PriceKala && Policy[0].IsUnlimited == false) {
+                    debugger
+                    var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
+                    if (res == true) {
+                        varStep = Detail.step + 1
+                    }
+                    else {
+                        $.LoadingOverlay("hide");
+                        return;
+                    }
+                }
+                else {
+                    /*
+                    +2 جمع میشود که مرحله مدیر عامل رد شود
+                    */
+                    varStep = Detail.step + 2
+
+                    ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
+
+                }
+
+            }
+            else if (Confirm[0].Role == "AML") {
+                varStep = Detail.step + 1
+
+                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
+
+            }
+            else if (Confirm[0].IsFinish == true) {
+                StatusWF = "خاتمه یافته"
+                varStep = Detail.step + 1
+            }
+            else {
+                varStep = Detail.step + 1
+            }
+        }
+        else if (result == "عدم تایید") {
+            varStep = Detail.step - 1
+        }
+        else {
+            alert("call to IT")
+            return;
+        }
+        if (varStep == 0) {
+            StatusWF = "تایید نشده";
+        }
+        else {
+
+        }
+
+        /*پیدا کردن تایید کننده بعدی */
+
+        var nextConfirm = await Get_ConfirmByStep(varStep, Detail.MasterId.CID)
 
 
 
+        var DarkhastSN2 = ""
+        if (ResDarkhastSN == null || ResDarkhastSN == "") {
+            DarkhastSN2 = Detail.DarkhastSN
+        }
+        else {
+            DarkhastSN2 = ResDarkhastSN.DarkhastSN
+        }
+        if (_exchangeRate == 0) {
+            _exchangeRate = Detail.exchangeRate;
+        }
+
+        //-----------------------------**************update Detail and create Log
+
+        var DetailRes = await update_Details(_CurrentIdDetail, result, description, varStep, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock, StatusWF, DarkhastSN2, nextConfirm)
+
+
+        //------------------------------------------
         showCartabl();
-        if (confirm[0].Role == "ICT") {
+        if (Confirm[0].Role == "ICT") {
             $("#windowICT").data("kendoWindow").close();
         }
-        else if (confirm[0].Role == "JAM") {
+        else if (Confirm[0].Role == "JAM") {
             $("#windowJAM").data("kendoWindow").close();
         }
-        else if (confirm[0].Role == "AML") {
+        else if (Confirm[0].Role == "AML") {
             $("#windowAML").data("kendoWindow").close();
         }
-        else if (confirm[0].Role == "REQ") {
+        else if (Confirm[0].Role == "REQ") {
             $("#windowREQ").data("kendoWindow").close();
         }
         else {
@@ -643,15 +668,28 @@ async function Show(id) {
         showWindowsICT()
     }
     else if (confirm[0].Role == "JAM") {
-
+        debugger
         var ShowAmvalPersonel = await serviceShowAmvalPersonel(Detail.MasterId.CID, Detail.MasterId.PersonelId);
-        var AmvalPersonelSelect = "<select id='selectOptionAmval'>"
-        AmvalPersonelSelect += "<option value='1'>این کالا اموالی نمیباشد</option>"
-        for (let index = 0; index < ShowAmvalPersonel.length; index++) {
+        if (Detail.IsAmvaly == 1) {
+            var AmvalPersonelSelect = "<select id='selectOptionAmval'>"
+            // AmvalPersonelSelect += "<option value='1'>این کالا اموالی نمیباشد</option>"
+            for (let index = 0; index < ShowAmvalPersonel.length; index++) {
 
-            AmvalPersonelSelect += "<option value=" + ShowAmvalPersonel[index].PlackNo + ">" + ShowAmvalPersonel[index].MoshakhasatKala + " - " + ShowAmvalPersonel[index].PlackNo + "</option>"
+                AmvalPersonelSelect += "<option value=" + ShowAmvalPersonel[index].PlackNo + ">" + ShowAmvalPersonel[index].MoshakhasatKala + " - " + ShowAmvalPersonel[index].PlackNo + "</option>"
+            }
+            AmvalPersonelSelect += "</select>"
         }
-        AmvalPersonelSelect += "</select>"
+        else {
+            var AmvalPersonelSelect = "<select id='selectOptionAmval'>"
+            AmvalPersonelSelect += "<option value='1' selected>این کالا اموالی نمیباشد</option>"
+            // for (let index = 0; index < ShowAmvalPersonel.length; index++) {
+
+            //     AmvalPersonelSelect += "<option value=" + ShowAmvalPersonel[index].PlackNo + ">" + ShowAmvalPersonel[index].MoshakhasatKala + " - " + ShowAmvalPersonel[index].PlackNo + "</option>"
+            // }
+            AmvalPersonelSelect += "</select>"
+        }
+
+
         $(".AmvalPersonel").append(AmvalPersonelSelect);
         showWindowsJAM()
     }
@@ -831,26 +869,21 @@ function exchangeRate() {
                 'withCredentials': true
             },
             dataType: "json",
-            // data: JSON.stringify(request),
-            //processData: false,
             success: function (data) {
-
                 resolve(data);
-                // console.log(data);
-
             },
             error: function (a) {
-
-                console.log(a);
+                resolve(0);
+                // console.log(a);
             }
         });
     })
 }
+//گرفتن موجودی از انبار پپ
 function Mojoodi_AnbarICT(CID) {
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/Mojoodi_AnbarICT"
         var request = { CID: CID }
-
         $.ajax({
             type: "POST",
             url: serviceURL,
@@ -938,5 +971,4 @@ function removeComma(str) {
 function removeLastChar(str) {
     return str.slice(0, -1)
 }
-
 //-----------------------

@@ -69,6 +69,9 @@ async function showCartabl() {
         table += "<td >"
         table += Details[index].StatusWF
         table += "</td>"
+        table += "<td >"
+        table += Details[index].ConfirmId.Title
+        table += "</td>"
         var Log = await Get_Log(Details[index].Id);
         if(Log.length>0)
         {
@@ -91,7 +94,7 @@ async function showCartabl() {
             table += "<td>" + Log[i].ConfirmId.Title + " - (" + Log[i].UserSubmitter.Title + ")</td>"
             table += "<td>" + Log[i].DateConfirm + "</td>"
             table += "<td>" + Log[i].Result + "</td>"
-            table += "<td>" + Log[i].Dsc + "</td>"
+            table += "<td colspan=2>" + Log[i].Dsc + "</td>"
             table += "</tr>"
         }
 
@@ -106,12 +109,13 @@ function Get_Details() {
     return new Promise(resolve => {
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("MasterId/Id,MasterId/Semat,MasterId/PersonelId,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
-            expand("MasterId").
+            items.select("ConfirmId/Title,MasterId/Id,MasterId/Semat,MasterId/PersonelId,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
+            expand("MasterId,ConfirmId").
             // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
             filter("MasterId/PersonelId eq " + CurrentPID + "").
             get().
             then(function (items) {
+                debugger
                 if (items.length == 0) {
                     resolve("null")
                 }
