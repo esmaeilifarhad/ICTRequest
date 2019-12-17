@@ -314,7 +314,7 @@ async function update_Details(_CurrentIdDetail, result, description, varStep, De
                 BuyStock: BuyStock,
                 BuyStockTitle: splitString(BuyStock)[0],
                 exchangeRate: _exchangeRate,
-               // ConfirmIdId: Confirm[0].Id
+                 ConfirmIdId:null
             }).then(async function (item) {
                 var Log = await Create_Log(Detail, Confirm, result, description)
                 resolve(item)
@@ -364,6 +364,7 @@ function Update_GenLookUp(Id, price) {
 //-----------------------------
 
 async function save() {
+    $("#myModal .modal-body p").remove()
     //-----------------------------get value from fields
     var description = ""
     description += $("#window .table .description textarea").val()
@@ -386,33 +387,55 @@ async function save() {
     if (Confirm[0].Role == "ICT") {
 
         if (EstelamGheymat == "" && result == "تایید") {
-            alert("لطفا قیمت فعلی کالا را مشخص نمایید");
+            // $("#myModal .modal-body p").remove()
+            $("#myModal .modal-body").append("<p>لطفا قیمت فعلی کالا را مشخص نمایید</p>")
+            $("#myModal").modal();
+
+            //alert("لطفا قیمت فعلی کالا را مشخص نمایید");
             return
         }
 
         if ((BuyStock == "" || BuyStock == undefined) && result == "تایید") {
-            alert("لطفا مشخص نمایید کالا را قصد دارید از انبار تهیه نمایید و یا خرید نمایید.");
+            // $("#myModal .modal-body p").remove()
+            $("#myModal .modal-body").append("<p>لطفا مشخص نمایید کالا را قصد دارید از انبار تهیه نمایید و یا خرید نمایید.</p>")
+            $("#myModal").modal();
+            // alert("لطفا مشخص نمایید کالا را قصد دارید از انبار تهیه نمایید و یا خرید نمایید.");
             return
         }
 
         var CurrentMojoody = _MojoodyAnbarInPap - _MojoodyAnbarInPortal
         if (CurrentMojoody < 1 && splitString(BuyStock)[0] == 'انبار' && result == "تایید") {
-            alert("در حال حاضر کالایی در انبار وجود ندارد" + "\n" + " موجودی انبار در پپ " + _MojoodyAnbarInPap.toString() + "\n" + " کالاهای در گردش " + _MojoodyAnbarInPortal.toString() + "\n" + _MojoodyAnbarInPap.toString() + "-" + _MojoodyAnbarInPortal.toString() + "=" + (_MojoodyAnbarInPap - _MojoodyAnbarInPortal).toString());
+            // $("#myModal .modal-body p").remove()
+            $("#myModal .modal-body").append("<p>در حال حاضر کالایی در انبار وجود ندارد</p>")
+            $("#myModal .modal-body").append("<p>موجودی انبار در پپ " + _MojoodyAnbarInPap.toString() + "</p>")
+            $("#myModal .modal-body").append("<p> کالاهای در گردش " + _MojoodyAnbarInPortal.toString() + "</p>")
+            $("#myModal .modal-body").append("<p>" + _MojoodyAnbarInPap.toString() + "-" + _MojoodyAnbarInPortal.toString() + "=" + (_MojoodyAnbarInPap - _MojoodyAnbarInPortal).toString() + "</p>")
+
+            $("#myModal").modal();
+            // alert("در حال حاضر کالایی در انبار وجود ندارد" + "\n" + " موجودی انبار در پپ " + _MojoodyAnbarInPap.toString() + "\n" + " کالاهای در گردش " + _MojoodyAnbarInPortal.toString() + "\n" + _MojoodyAnbarInPap.toString() + "-" + _MojoodyAnbarInPortal.toString() + "=" + (_MojoodyAnbarInPap - _MojoodyAnbarInPortal).toString());
             return
         }
-        if (Policy.length == 0 && result == "تایید") {
-            alert("لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید")
+        if (Policy[0].Price == null && result == "تایید" && Policy[0].IsUnlimited == false) {
+            // $("#myModal .modal-body p").remove()
+            $("#myModal .modal-body").append("<p>لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید</p>")
+            $("#myModal .modal-body").append("<p><a target='_blanck' href=https://portal.golrang.com/ictrequests/Pages/Equ_policy.aspx>لینک تعریف محدودیدت ها</a></p>")
+            $("#myModal").modal();
+            //alert("لطفا برای کالا " + splitString(Detail.NameKala)[1] + " و سمت " + Detail.MasterId.Semat + " محدوده قیمت مشخص نمایید")
             $.LoadingOverlay("hide");
             return;
         }
 
     }
     if (result == undefined && Confirm[0].Role != "JAM") {
-        alert("لطفا نتیجه را مشخص نمایید");
+        $("#myModal .modal-body").append("<p>لطفا نتیجه را مشخص نمایید</p>")
+        $("#myModal").modal();
+        //alert("لطفا نتیجه را مشخص نمایید");
         return
     }
     if (result == "عدم تایید" && description.trim() == "") {
-        alert("لطفا در صورت عدم تایید توضیحات را پر نمایید.");
+        $("#myModal .modal-body").append("<p>لطفا در صورت عدم تایید توضیحات را پر نمایید.</p>")
+        $("#myModal").modal();
+        //alert("لطفا در صورت عدم تایید توضیحات را پر نمایید.");
         return
     }
     else {
@@ -447,7 +470,10 @@ async function save() {
             if (Confirm[0].Role == "ICT") {
 
                 if (parseInt(EstelamGheymat) > PriceKala && Policy[0].IsUnlimited == false) {
-                    debugger
+                    // $.LoadingOverlay("hide");
+
+
+
                     var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
                     if (res == true) {
                         varStep = Detail.step + 1
@@ -456,6 +482,7 @@ async function save() {
                         $.LoadingOverlay("hide");
                         return;
                     }
+
                 }
                 else {
                     /*
@@ -704,7 +731,24 @@ async function Show(id) {
     }
 
 }
-//----------------------------------------------------Modal Dialog Form
+async function ShowModalConfirm(res) {
+    debugger
+    return new Promise(resolve => {
+
+        $("#ModalConfirm .modal-body").append("<p>با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند</p>")
+        $("#ModalConfirm").modal();
+        if (res == true) {
+
+            resolve(true);
+        }
+
+    });
+}
+//----------------------------
+function ConfirmMethod() {
+    resolve(true);
+}
+//------------------------Modal Dialog Form
 function showWindows() {
     var myWindow = $("#window"),
         undo = $("#newRecord");

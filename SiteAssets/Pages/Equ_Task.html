@@ -60,6 +60,7 @@
 
 <body>
     <div class="container main">
+
         <br />
         <div class="row">
             <div class="col-sm-12">
@@ -428,14 +429,14 @@
                         <br>
                         <div id="FolderLogREQ"></div>
                     </div>
-                    <div class="col-sm-5 styleDecision" >
+                    <div class="col-sm-5 styleDecision">
                         <table class="table">
                             <tr style="color: #ce4415;font-weight: bolder;font-size: 16px;">
                                 <td class="onvan">مسئول</td>
                                 <td class="Confirm"></td>
                             </tr>
                             <tr>
-                                <td style="color: red" colspan="2" class="onvan">کاربر گرامی 
+                                <td style="color: red" colspan="2" class="onvan">کاربر گرامی
                                     در صورتی که کالای شما اموالی است. لطفا شماره پلاک خود را با
                                     کالای تحویل گرفته شده چک نمایید و در صورت درست بودن آنرا تایید نمایید /
                                     .و در صورت اشتباه آنرا عدم تایید نمایید
@@ -495,6 +496,72 @@
 
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog" style="z-index: 99100">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">هشدار</h4>
+                    </div>
+                    <div class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">بستن</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ModalConfirm" role="dialog" style="z-index: 99100">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">هشدار</h4>
+                    </div>
+                    <div class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" onclick="ConfirmMethod()">تایید</button>
+                        <button type="button" class="btn btn-default" onclick="RejectMethod()">رد</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Modal -->
+          <!-- <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"
+            id="mi-modal">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Confirmar</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" id="modal-btn-si">Si</button>
+                        <button type="button" class="btn btn-primary" id="modal-btn-no">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert" role="alert" id="result"></div> -->
+
+
+
+    </div>
 
 </body>
 

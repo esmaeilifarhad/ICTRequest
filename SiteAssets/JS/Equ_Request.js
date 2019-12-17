@@ -9,8 +9,11 @@ var _IctKalaFilter;
 var CurrentSematId;
 var today = "";
 var portalAddress = _spPageContextInfo.webAbsoluteUrl;
+var InfoPersonelCompany;
 
 var _DetailsObjects = []
+
+var person = {};
 /*
 List Name :
 GIG_equ_Request
@@ -35,7 +38,7 @@ $(document).ready(function () {
 
 
 
-
+    ShowSuccessor();
     ShowIndividualprofile();
 
 });
@@ -158,14 +161,65 @@ async function addDetail() {
     $("#tableres2 table").append(table);
 
 }
-//-------------------------------------------------------
-async function ShowIndividualprofile() {
+//-------------------------------------------------------Show
+async function ShowSuccessor() {
     var IsUserSuccessor = await IsUserInGroup(104);
+    if (IsUserSuccessor == true) {
 
+        $("#tableres .divSuccessor .IsForSuccessor").remove()
+        $("#tableres .divSuccessor").prepend("<tr class='IsForSuccessor'><td>انتخاب برای پرسنل</td><td><input id='IsForSuccessor' onchange='checkedcheckboxIsForSuccessor(this)'  type='checkbox'  value='true'></td></tr>")
+
+    }
+}
+async function ShowIndividualprofile() {
     var Kala = []
-    _PersonelInfo = await servicePersonelInfo();
 
-    CurrentSematId = _PersonelInfo.PersonelInfo.SematId;
+    InfoPersonelCompany = await serviceInfoPersonelCompany();
+
+    if ($("#IsForSuccessor").is(':checked')) {
+        var ResPersonelId = $("#personPickerId option:selected").val();
+        var res = InfoPersonelCompany.find(x => x.Personelid == ResPersonelId);
+        CurrentSematId = res.SematId
+        person.DepId = res.DepId
+        person.Depname = res.Depname
+        person.Gender = res.Gender
+        person.PersonelFamily = res.PersonelFamily
+        person.PersonelName = res.PersonelName
+        person.Personelid = res.Personelid
+        person.SectionName = res.SectionName
+        person.SematId = res.SematId
+        person.SematTitle = res.SematTitle
+        person.userid = res.userid
+    }
+    else {
+        var res = InfoPersonelCompany.find(x => x.Personelid == sessionStorage.getItem("PID"));
+        debugger
+       // _PersonelInfo = await servicePersonelInfo();
+        CurrentSematId = res.SematId;
+        person.DepId = res.DepId
+        person.Depname = res.Depname
+        person.Gender = res.Gender
+        person.PersonelFamily = res.PersonelFamily
+        person.PersonelName = res.PersonelName
+        person.Personelid = res.Personelid
+        person.SectionName = res.SectionName
+        person.SematId = res.SematId
+        person.SematTitle = res.SematTitle
+        person.userid = sessionStorage.getItem("UID");
+/*
+        person.DepId = _PersonelInfo.PersonelInfo.DepId
+        person.Depname = _PersonelInfo.PersonelInfo.Depname
+        //person.Gender = res.Gender
+        person.PersonelFamily = _PersonelInfo.PersonelInfo.PersonelFamily
+        person.PersonelName = _PersonelInfo.PersonelInfo.PersonelName
+        person.Personelid =sessionStorage.getItem("PID")
+        person.SectionName = _PersonelInfo.PersonelInfo.SectionName
+        person.SematId = _PersonelInfo.PersonelInfo.SematId
+        person.SematTitle = _PersonelInfo.PersonelInfo.Semat
+        person.userid = sessionStorage.getItem("UID");
+*/
+    }
+
     _IctKalaFilter = await serviceIctKalaFilter();
 
     var Policy = await Get_Policy()
@@ -180,29 +234,26 @@ async function ShowIndividualprofile() {
             }
         }
     }
-    if(IsUserSuccessor==true)
-    {
-        $("#tableres .table .Successor").remove()
-        $("#tableres .table").prepend("<tr class='Successor'><td>انتخاب برای</td><td><select><option>مهدی ترابی</option></select></td></tr>")
-    }
+    //-------------------------------------------
+    $("#Kala select").remove()
     var selectOption = "<select>"
     for (let index = 0; index < Kala.length; index++) {
         selectOption += "<option value=" + Kala[index].KalaValue + ">" + Kala[index].KalaName + "</option>"
     }
     selectOption += "</select>"
     $("#Kala").append(selectOption)
-
+    //---------------------------------------------
 
     $("#NameUser").next().remove();
     $("#PID").next().remove();
     $("#Department").next().remove();
     $("#Semat").next().remove();
 
-
-    $("#NameUser").after("<span>" + CurrentName + "</span>");
-    $("#PID").after("<span>" + CurrentPID + "</span>");
-    $("#Semat").after("<span>" + _PersonelInfo.PersonelInfo.Semat + "</span>");
-    $("#Department").after("<span>" + CurrentDep + "</span>");
+debugger
+    $("#NameUser").after("<span>"+ (person.Gender=="False"?"آقای":"خانم")+" " + person.PersonelName+" "+person.PersonelFamily + "</span>");
+    $("#PID").after("<span>" + person.Personelid + "</span>");
+    $("#Semat").after("<span>" + person.SematTitle + "</span>");
+    $("#Department").after("<span>" + person.Depname + "</span>");
 
 }
 function showMessage(message) {
@@ -210,26 +261,54 @@ function showMessage(message) {
     $("#message table").append("<tr class='tblRow'><td>" + message + "</td></tr>");
 }
 //-------------------------------------------------------
+function checkedcheckboxIsForSuccessor(thiss) {
+
+    if ($("#IsForSuccessor").is(':checked')) {
+        // checked
+        var createSelectOption = "<tr class='Successor'><td>پرسنل</td><td><select id='personPickerId' onchange='personPick()'>"
+
+        for (let index = 0; index < InfoPersonelCompany.length; index++) {
+
+            var element = InfoPersonelCompany[index];
+           // console.log(element)
+            createSelectOption += "<option value=" + InfoPersonelCompany[index].Personelid + ">" + InfoPersonelCompany[index].PersonelName + " " + InfoPersonelCompany[index].PersonelFamily + "</option>"
+        }
+        createSelectOption += "</select></td></tr>"
+        $("#tableres .table .Successor").remove()
+        $("#tableres .table").prepend(createSelectOption)
+    }
+    else {
+        // unchecked
+        $("#tableres .table .Successor").remove()
+
+    }
+}
+function personPick() {
+    ShowIndividualprofile();
+}
 function CreateGIG_equ_Request() {
+   // console.log(person)
+
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Request").items.add({
-            RR_ID: CurrentSematId,
-            Semat: _PersonelInfo.PersonelInfo.Semat,
-            Title: CurrentName,
-            PersonelId: CurrentPID,
+            RR_ID: person.SematId,
+            Semat:person.SematTitle,
+            Title: person.PersonelName+" "+person.PersonelFamily,
+            PersonelId: person.Personelid,
             RequestDate: today,
             // Description: description,
-            UserId: sessionStorage.getItem("UID"),
-            DepName: CurrentDep,
-            DepId: _PersonelInfo.PersonelInfo.DepId,
+            UserId: person.userid,
+            DepName:  person.Depname,
+            DepId:  person.DepId,
             CID: CurrentCID
             // IsFinish: "درگردش"
-            // confirmUserId: 641/*MTH_Confirm => group*/
+            // confirmUserId: 641/*MTH_Confirm => group
         }).then(function (item) {
             console.log(item);
             resolve(item);
         });
     });
+    
 }
 async function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
     var Confirm = await Get_Confirm();
@@ -237,7 +316,7 @@ async function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
     var res = _IctKalaFilter.find(x => x.KalaValue == GIG_equ_Details.KalaId);
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").items.add({
-            Title: CurrentName,
+            Title: person.PersonelName+" "+person.PersonelFamily,
             StatusWF: "درگردش",
             NameKala: GIG_equ_Details.KalaId + ";#" + GIG_equ_Details.KalaText,
             NameKalaValue: GIG_equ_Details.KalaId,
@@ -317,31 +396,28 @@ function IsUserInGroup(id) {
     });
 }
 //-------------------------------------------web services
-function servicePersonelInfo() {
-    return new Promise(resolve => {
-        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/InformationPersonel"
-        var request = { PersonelId: CurrentPID, CID: CurrentCID }
-        $.ajax({
-            type: "POST",
-            url: serviceURL,
-            contentType: "application/json; charset=utf-8",
-            xhrFields: {
-                'withCredentials': true
-            },
-            dataType: "json",
-            data: JSON.stringify(request),
-            //processData: false,
-            success: function (data) {
-                resolve(data);
-                // console.log(data);
-
-            },
-            error: function (a) {
-                console.log(a);
-            }
-        });
-    })
-}
+// function servicePersonelInfo() {
+//     return new Promise(resolve => {
+//         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/InformationPersonel"
+//         var request = { PersonelId: CurrentPID, CID: CurrentCID }
+//         $.ajax({
+//             type: "POST",
+//             url: serviceURL,
+//             contentType: "application/json; charset=utf-8",
+//             xhrFields: {
+//                 'withCredentials': true
+//             },
+//             dataType: "json",
+//             data: JSON.stringify(request),
+//             success: function (data) {
+//                 resolve(data);
+//             },
+//             error: function (a) {
+//                 console.log(a);
+//             }
+//         });
+//     })
+// }
 function serviceIctKalaFilter() {
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ictkalafilter";
@@ -367,7 +443,31 @@ function serviceIctKalaFilter() {
         });
     })
 }
+function serviceInfoPersonelCompany() {
+    return new Promise(resolve => {
+        var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/InfoPersonelCompany"
+        var request = { CID: CurrentCID }
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            contentType: "application/json; charset=utf-8",
+            xhrFields: {
+                'withCredentials': true
+            },
+            dataType: "json",
+            data: JSON.stringify(request),
+            //processData: false,
+            success: function (data) {
+                resolve(data);
+                // console.log(data);
 
+            },
+            error: function (a) {
+                console.log(a);
+            }
+        });
+    })
+}
 //-------------------------------------------------------
 function foramtDate(str) {
     return str.slice(0, 2) + "/" + str.slice(2, 4) + "/" + str.slice(4, 6)

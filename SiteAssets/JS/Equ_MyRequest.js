@@ -70,7 +70,7 @@ async function showCartabl() {
         table += Details[index].StatusWF
         table += "</td>"
         table += "<td >"
-        table += Details[index].ConfirmId.Title
+        table += Details[index].ConfirmId.Title==undefined?"...........":Details[index].ConfirmId.Title
         table += "</td>"
         var Log = await Get_Log(Details[index].Id);
         if(Log.length>0)
