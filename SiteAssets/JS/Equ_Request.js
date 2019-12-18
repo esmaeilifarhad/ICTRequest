@@ -163,12 +163,10 @@ async function addDetail() {
 }
 //-------------------------------------------------------Show
 async function ShowSuccessor() {
-    var IsUserSuccessor = await IsUserInGroup(104);
+    var IsUserSuccessor = await IsCurrentUserMemberOfGroup(104);
     if (IsUserSuccessor == true) {
-
         $("#tableres .divSuccessor .IsForSuccessor").remove()
         $("#tableres .divSuccessor").prepend("<tr class='IsForSuccessor'><td>انتخاب برای پرسنل</td><td><input id='IsForSuccessor' onchange='checkedcheckboxIsForSuccessor(this)'  type='checkbox'  value='true'></td></tr>")
-
     }
 }
 async function ShowIndividualprofile() {
@@ -193,8 +191,7 @@ async function ShowIndividualprofile() {
     }
     else {
         var res = InfoPersonelCompany.find(x => x.Personelid == sessionStorage.getItem("PID"));
-        debugger
-       // _PersonelInfo = await servicePersonelInfo();
+        // _PersonelInfo = await servicePersonelInfo();
         CurrentSematId = res.SematId;
         person.DepId = res.DepId
         person.Depname = res.Depname
@@ -206,40 +203,56 @@ async function ShowIndividualprofile() {
         person.SematId = res.SematId
         person.SematTitle = res.SematTitle
         person.userid = sessionStorage.getItem("UID");
-/*
-        person.DepId = _PersonelInfo.PersonelInfo.DepId
-        person.Depname = _PersonelInfo.PersonelInfo.Depname
-        //person.Gender = res.Gender
-        person.PersonelFamily = _PersonelInfo.PersonelInfo.PersonelFamily
-        person.PersonelName = _PersonelInfo.PersonelInfo.PersonelName
-        person.Personelid =sessionStorage.getItem("PID")
-        person.SectionName = _PersonelInfo.PersonelInfo.SectionName
-        person.SematId = _PersonelInfo.PersonelInfo.SematId
-        person.SematTitle = _PersonelInfo.PersonelInfo.Semat
-        person.userid = sessionStorage.getItem("UID");
-*/
     }
 
     _IctKalaFilter = await serviceIctKalaFilter();
 
-    var Policy = await Get_Policy()
-    for (let index = 0; index < _IctKalaFilter.length; index++) {
-        var res = Policy.find(x => x.KalaValue == _IctKalaFilter[index].KalaValue);
-        if (res == undefined) {
-            // Kala.push({ type: "create", KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
+    //-----------------------------------------تجهیزات - مجاز به انتخاب همه تجهیزات ------کاربر در این گروه مجاز است همه ی کالا ها را انتخاب کند   
+    debugger
+    var IsCanSelectAllICT = await IsCurrentUserMemberOfGroup(105);
+    debugger
+    if (IsCanSelectAllICT == true) {
+        for (let index = 0; index < _IctKalaFilter.length; index++) {
+            Kala.push({ KalaValue: _IctKalaFilter[index].KalaValue, KalaName: _IctKalaFilter[index].KalaName, IsAmvaly: _IctKalaFilter[index].IsAmvaly, GroohKala: _IctKalaFilter[index].DSCGrooKala })
         }
-        else {
-            if (res.IsBelong == true || res.IsUnlimited == true) {
-                Kala.push({ KalaValue: _IctKalaFilter[index].KalaValue, KalaName: _IctKalaFilter[index].KalaName, IsAmvaly: _IctKalaFilter[index].IsAmvaly })
+    }
+    else {
+        var Policy = await Get_Policy()
+        for (let index = 0; index < _IctKalaFilter.length; index++) {
+            var res = Policy.find(x => x.KalaValue == _IctKalaFilter[index].KalaValue);
+            if (res == undefined) {
+                // Kala.push({ type: "create", KalaValue: KalaFilter[index].KalaValue, KalaName: KalaFilter[index].KalaName, CID: 50 })
+            }
+            else {
+                if (res.IsBelong == true || res.IsUnlimited == true) {
+                    Kala.push({ KalaValue: _IctKalaFilter[index].KalaValue, KalaName: _IctKalaFilter[index].KalaName, IsAmvaly: _IctKalaFilter[index].IsAmvaly, GroohKala: _IctKalaFilter[index].DSCGrooKala })
+                }
             }
         }
     }
     //-------------------------------------------
     $("#Kala select").remove()
     var selectOption = "<select>"
+    var flagCheck = ""
+
     for (let index = 0; index < Kala.length; index++) {
+        debugger
+        if (flagCheck == "") {
+
+            selectOption += "<optgroup label='" + Kala[index].GroohKala + "'>"
+        }
+
+        if (flagCheck != "" && flagCheck != Kala[index].GroohKala) {
+
+            selectOption += "</optgroup>"
+            selectOption += "<optgroup label='" + Kala[index].GroohKala + "'>"
+
+        }
+        flagCheck = Kala[index].GroohKala
+
         selectOption += "<option value=" + Kala[index].KalaValue + ">" + Kala[index].KalaName + "</option>"
     }
+    selectOption += "</optgroup>"
     selectOption += "</select>"
     $("#Kala").append(selectOption)
     //---------------------------------------------
@@ -249,8 +262,7 @@ async function ShowIndividualprofile() {
     $("#Department").next().remove();
     $("#Semat").next().remove();
 
-debugger
-    $("#NameUser").after("<span>"+ (person.Gender=="False"?"آقای":"خانم")+" " + person.PersonelName+" "+person.PersonelFamily + "</span>");
+    $("#NameUser").after("<span>" + (person.Gender == "False" ? "آقای" : "خانم") + " " + person.PersonelName + " " + person.PersonelFamily + "</span>");
     $("#PID").after("<span>" + person.Personelid + "</span>");
     $("#Semat").after("<span>" + person.SematTitle + "</span>");
     $("#Department").after("<span>" + person.Depname + "</span>");
@@ -270,7 +282,7 @@ function checkedcheckboxIsForSuccessor(thiss) {
         for (let index = 0; index < InfoPersonelCompany.length; index++) {
 
             var element = InfoPersonelCompany[index];
-           // console.log(element)
+            // console.log(element)
             createSelectOption += "<option value=" + InfoPersonelCompany[index].Personelid + ">" + InfoPersonelCompany[index].PersonelName + " " + InfoPersonelCompany[index].PersonelFamily + "</option>"
         }
         createSelectOption += "</select></td></tr>"
@@ -287,19 +299,19 @@ function personPick() {
     ShowIndividualprofile();
 }
 function CreateGIG_equ_Request() {
-   // console.log(person)
+    // console.log(person)
 
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Request").items.add({
             RR_ID: person.SematId,
-            Semat:person.SematTitle,
-            Title: person.PersonelName+" "+person.PersonelFamily,
+            Semat: person.SematTitle,
+            Title: person.PersonelName + " " + person.PersonelFamily,
             PersonelId: person.Personelid,
             RequestDate: today,
             // Description: description,
             UserId: person.userid,
-            DepName:  person.Depname,
-            DepId:  person.DepId,
+            DepName: person.Depname,
+            DepId: person.DepId,
             CID: CurrentCID
             // IsFinish: "درگردش"
             // confirmUserId: 641/*MTH_Confirm => group
@@ -308,7 +320,7 @@ function CreateGIG_equ_Request() {
             resolve(item);
         });
     });
-    
+
 }
 async function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
     var Confirm = await Get_Confirm();
@@ -316,7 +328,7 @@ async function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
     var res = _IctKalaFilter.find(x => x.KalaValue == GIG_equ_Details.KalaId);
     return new Promise(resolve => {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").items.add({
-            Title: person.PersonelName+" "+person.PersonelFamily,
+            Title: person.PersonelName + " " + person.PersonelFamily,
             StatusWF: "درگردش",
             NameKala: GIG_equ_Details.KalaId + ";#" + GIG_equ_Details.KalaText,
             NameKalaValue: GIG_equ_Details.KalaId,
@@ -386,7 +398,9 @@ function IsUserInGroup(id) {
             crossDomain: true,
             headers: { "Accept": "application/json; odata=verbose" },
             success: function (data) {
+
                 var IsExist = data.d.CanCurrentUserViewMembership
+                debugger
                 resolve(IsExist)
             },
             error: function (data) {
@@ -394,6 +408,44 @@ function IsUserInGroup(id) {
             }
         });
     });
+}
+function IsCurrentUserMemberOfGroup(id) {
+    /*
+    تجهیزات - انتخاب جانشین    104 
+    105   تجهیزات - مجاز به انتخاب همه تجهیزات   
+    */
+    return new Promise(resolve => {
+        var grpName = [id];
+        var isUserInGroups = false;
+        var url = _spPageContextInfo.webAbsoluteUrl + "/_api/web/currentuser/groups?$select=Id";
+        $.ajax({
+            url: url,
+            type: "GET",
+            async: false,
+            headers: {
+                "Accept": "application/json;odata=verbose",
+            },
+            success: function (data) {
+
+                for (var i = 0; i < grpName.length; i++) {
+                    for (var j = 0; j < data.d.results.length; j++) {
+                        if (grpName[i] == data.d.results[j].Id) {
+                            isUserInGroups = true;
+                        }
+                        else {
+
+                        }
+                    }
+                }
+                resolve(isUserInGroups)
+            },
+            error: function (error) {
+
+                //console.log(JSON.stringify(error));  
+            }
+        });
+    });
+
 }
 //-------------------------------------------web services
 // function servicePersonelInfo() {

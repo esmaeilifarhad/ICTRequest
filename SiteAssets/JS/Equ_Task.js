@@ -159,7 +159,7 @@ function Get_Details(usersInConfirm) {
         // console.log(filterStatusWF);
         $pnp.sp.web.lists.
             getByTitle("GIG_equ_Details").
-            items.select("IsAmvaly,exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat").
+            items.select("IsAmvaly,exchangeRate,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID,MasterId/Semat,MasterId/UserId").
             expand("MasterId").
             // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
             filter(filterStatusWF).
@@ -194,7 +194,7 @@ function Get_DetailsById(id) {
         $pnp.sp.web.lists.getByTitle("GIG_equ_Details").
             items.
             getById(id).
-            select("IsAmvaly,exchangeRate,BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
+            select("IsAmvaly,MasterId/UserId,exchangeRate,BuyStock,MasterId/Id,MasterId/Semat,DarkhastSN,MasterId/Title,MasterId/RR_ID,MasterId/PersonelId,MasterId/CID,MasterId/DepName,MasterId/RequestDate,Id,Title,step,NameKalaValue,Tozihat,PlackNo,StatusWF,NameKala,EstelamGheymat").
             expand("MasterId").
             get().
             then(function (item) {
@@ -211,7 +211,8 @@ function Create_Log(Detail, confirm, result, description) {
             DateConfirm: foramtDate(today),
             DetailIdId: Detail.Id,
             ConfirmIdId: confirm[0].Id,
-            UserSubmitterId: _spPageContextInfo.userId
+            UserSubmitterId: _spPageContextInfo.userId,
+            USERID: sessionStorage.getItem("UID")
 
         }).then(function (item) {
             resolve(item);
@@ -230,6 +231,22 @@ function Get_Log(id) {
             orderBy("Id", false).
             get().
             then(function (item) {
+                resolve(item)
+            });
+    })
+}
+function Get_LogTopOne(id) {
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.getByTitle("GIG_Equ_Log").
+            items.
+            select("USERID,ConfirmId/Id,ConfirmId/Title,DetailId/Id,DetailId/Title,Result,Dsc,DateConfirm,Id,UserSubmitter/Title,UserSubmitter/Id").
+            expand("ConfirmId,DetailId,UserSubmitter").
+            filter("DetailId/Id eq " + id + "").
+            orderBy("Id", false).
+            top(1).
+            get().
+            then(function (item) {
+                debugger
                 resolve(item)
             });
     })
@@ -314,7 +331,7 @@ async function update_Details(_CurrentIdDetail, result, description, varStep, De
                 BuyStock: BuyStock,
                 BuyStockTitle: splitString(BuyStock)[0],
                 exchangeRate: _exchangeRate,
-                 ConfirmIdId:null
+                ConfirmIdId: null
             }).then(async function (item) {
                 var Log = await Create_Log(Detail, Confirm, result, description)
                 resolve(item)
@@ -465,15 +482,10 @@ async function save() {
         if (Policy.length > 0) {
             var PriceKala = _exchangeRate * Policy[0].Price
         }
-
         if (result == "تایید") {
             if (Confirm[0].Role == "ICT") {
-
                 if (parseInt(EstelamGheymat) > PriceKala && Policy[0].IsUnlimited == false) {
                     // $.LoadingOverlay("hide");
-
-
-
                     var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
                     if (res == true) {
                         varStep = Detail.step + 1
@@ -482,24 +494,21 @@ async function save() {
                         $.LoadingOverlay("hide");
                         return;
                     }
-
                 }
                 else {
                     /*
                     +2 جمع میشود که مرحله مدیر عامل رد شود
                     */
+                    var Log = await Get_LogTopOne(Detail.Id)
+
                     varStep = Detail.step + 2
-
-                    ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
-
+                    ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1], Detail.MasterId.UserId, Log[0].USERID, sessionStorage.getItem("UID"),Detail.Tozihat);
                 }
-
             }
             else if (Confirm[0].Role == "AML") {
+                var Log = await Get_LogTopOne(Detail.Id)
                 varStep = Detail.step + 1
-
-                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1]);
-
+                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1], Detail.MasterId.UserId, Log[0].USERID, sessionStorage.getItem("UID"),Detail.Tozihat);
             }
             else if (Confirm[0].IsFinish == true) {
                 StatusWF = "خاتمه یافته"
@@ -841,12 +850,11 @@ function showWindowsREQ() {
 }
 //----------------------------------------------------web services
 //create record header master in Tadarokat
-function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock) {
-
+function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock, DarkhastKonandehID,TaeedKonandehID,TasvibKonandehID,Tozih) {
 
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ICTRequestTadarokat"
-        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID, Kalasn: Kalasn, BuyStock: BuyStock }
+        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID, Kalasn: Kalasn, BuyStock: BuyStock, DarkhastKonandehID: DarkhastKonandehID,TaeedKonandehID:TaeedKonandehID,TasvibKonandehID:TasvibKonandehID,Tozih:Tozih }
         // {"CID":"50","Date":"980917","PortalReqHeaderID":"68","Kalasn":"7.1","BuyStock":2}
         $.ajax({
             type: "POST",
