@@ -49,16 +49,15 @@ $(document).ready(function () {
     today = year + "" + mounth + "" + rooz
 
 
+
     showCartabl();
 
 });
 
+
+
 //-------------------------------------------------------
 
-// function showMessage(message) {
-//     $("#message p").remove()
-//     $("#message").append("<p class='message'>" + message + "</p>");
-// }
 async function showCartabl() {
     $("#tableres2 table  .rowData").remove()
     //---------------------
@@ -285,7 +284,6 @@ function Get_GenLookUpById(id) {
     })*/
 
 }
-
 function Get_Confirm() {
     return new Promise(resolve => {
         $pnp.sp.web.lists.
@@ -485,15 +483,31 @@ async function save() {
         if (result == "تایید") {
             if (Confirm[0].Role == "ICT") {
                 if (parseInt(EstelamGheymat) > PriceKala && Policy[0].IsUnlimited == false) {
-                    // $.LoadingOverlay("hide");
-                    var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
-                    if (res == true) {
+                    $.LoadingOverlay("hide");
+                   // var res = confirm("با توجه به اینکه قیمت کالا از محدوده درخواست کاربر بیشتر میباشد مدیر عامل باید تصمیم بگیرند")
+                   
+                    var res =await customConfirm(EstelamGheymat,PriceKala)
+
+                
+                /*
+                    if (res.value) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        )
+                    }*/
+
+
+              
+                    if (res.value == true) {
                         varStep = Detail.step + 1
                     }
                     else {
                         $.LoadingOverlay("hide");
                         return;
                     }
+
                 }
                 else {
                     /*
@@ -502,13 +516,13 @@ async function save() {
                     var Log = await Get_LogTopOne(Detail.Id)
 
                     varStep = Detail.step + 2
-                    ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1], Detail.MasterId.UserId, Log[0].USERID, sessionStorage.getItem("UID"),Detail.Tozihat);
+                    ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1], Detail.MasterId.UserId, Log[0].USERID, sessionStorage.getItem("UID"), Detail.Tozihat);
                 }
             }
             else if (Confirm[0].Role == "AML") {
                 var Log = await Get_LogTopOne(Detail.Id)
                 varStep = Detail.step + 1
-                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1], Detail.MasterId.UserId, Log[0].USERID, sessionStorage.getItem("UID"),Detail.Tozihat);
+                ResDarkhastSN = await serviceICTRequestTadarokat(Detail.MasterId.RequestDate, _CurrentIdDetail, splitString(Detail.NameKala)[0], splitString(BuyStock)[1], Detail.MasterId.UserId, Log[0].USERID, sessionStorage.getItem("UID"), Detail.Tozihat);
             }
             else if (Confirm[0].IsFinish == true) {
                 StatusWF = "خاتمه یافته"
@@ -552,7 +566,15 @@ async function save() {
         //-----------------------------**************update Detail and create Log
 
         var DetailRes = await update_Details(_CurrentIdDetail, result, description, varStep, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock, StatusWF, DarkhastSN2, nextConfirm)
-
+       console.log(DetailRes)
+        debugger
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'با موفقیت ذخیره شد',
+            showConfirmButton: false,
+            timer: 1500
+        })
 
         //------------------------------------------
         showCartabl();
@@ -754,9 +776,25 @@ async function ShowModalConfirm(res) {
     });
 }
 //----------------------------
-function ConfirmMethod() {
-    resolve(true);
+
+function customConfirm(EstelamGheymat,PriceKala) {
+ 
+    return new Promise(resolve => {
+        Swal.fire({
+            title: "<p style='text-align: justify;'>با توجه به اینکه قیمت فعلی کالا "+"<span style='color:red'>"+SeparateThreeDigits(EstelamGheymat)+"</span>"+" بیشتر از محدوده قیمت درخواست کاربر "+"<span style='color:red'>"+SeparateThreeDigits(PriceKala)+"</span>"+" میباشد مدیر عامل باید تصمیم بگیرند</p>",
+            text: "در صورت موافقت بر روی دکمه  ارسال به مدیر عامل  کلیک نمایید",
+            icon: 'info',
+            showCancelButton: true,
+            cancelButtonText: 'خیر ارسال نشود',
+            confirmButtonColor: '#3085d6!important',
+            cancelButtonColor: 'red!important',
+            confirmButtonText: 'ارسال به مدیر عامل'
+        }).then((result) => {
+            resolve(result)
+        })
+    });
 }
+
 //------------------------Modal Dialog Form
 function showWindows() {
     var myWindow = $("#window"),
@@ -850,11 +888,11 @@ function showWindowsREQ() {
 }
 //----------------------------------------------------web services
 //create record header master in Tadarokat
-function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock, DarkhastKonandehID,TaeedKonandehID,TasvibKonandehID,Tozih) {
+function serviceICTRequestTadarokat(myDate, PortalReqHeaderID, Kalasn, BuyStock, DarkhastKonandehID, TaeedKonandehID, TasvibKonandehID, Tozih) {
 
     return new Promise(resolve => {
         var serviceURL = "https://portal.golrang.com/_vti_bin/SPService.svc/ICTRequestTadarokat"
-        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID, Kalasn: Kalasn, BuyStock: BuyStock, DarkhastKonandehID: DarkhastKonandehID,TaeedKonandehID:TaeedKonandehID,TasvibKonandehID:TasvibKonandehID,Tozih:Tozih }
+        var request = { CID: CurrentCID, Date: myDate, PortalReqHeaderID: PortalReqHeaderID, Kalasn: Kalasn, BuyStock: BuyStock, DarkhastKonandehID: DarkhastKonandehID, TaeedKonandehID: TaeedKonandehID, TasvibKonandehID: TasvibKonandehID, Tozih: Tozih }
         // {"CID":"50","Date":"980917","PortalReqHeaderID":"68","Kalasn":"7.1","BuyStock":2}
         $.ajax({
             type: "POST",

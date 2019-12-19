@@ -1,6 +1,10 @@
 #WebPartWPQ2_ChromeTitle,#pageTitle{
   display: none;
 }
+.k-widget 
+{
+  z-index:150 !important
+}
 .styleLog{
   background-image: linear-gradient(to bottom right, #f7f4f4, #940909);
   border-radius: 29px;
