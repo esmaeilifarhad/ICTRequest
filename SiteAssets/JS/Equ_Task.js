@@ -329,7 +329,8 @@ async function update_Details(_CurrentIdDetail, result, description, varStep, De
                 BuyStock: BuyStock,
                 BuyStockTitle: splitString(BuyStock)[0],
                 exchangeRate: _exchangeRate,
-                ConfirmIdId: null
+                ConfirmIdId: null,
+                SendNotification:true
             }).then(async function (item) {
                 var Log = await Create_Log(Detail, Confirm, result, description)
                 resolve(item)
@@ -349,7 +350,8 @@ async function update_Details(_CurrentIdDetail, result, description, varStep, De
                 BuyStock: BuyStock,
                 BuyStockTitle: splitString(BuyStock)[0],
                 exchangeRate: _exchangeRate,
-                ConfirmIdId: nextConfirm[0].Id
+                ConfirmIdId: nextConfirm[0].Id,
+                SendNotification:true
             }).then(async function (item) {
                 var Log = await Create_Log(Detail, Confirm, result, description)
                 resolve(item)

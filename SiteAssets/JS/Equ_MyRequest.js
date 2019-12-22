@@ -203,6 +203,8 @@ function foramtDate(str) {
     return str.slice(0, 2) + "/" + str.slice(2, 4) + "/" + str.slice(4, 6)
 }
 function splitString(str) {
+    debugger
+    if(str!=null || str !="" || str!=undefined)
     return str.split(";#")
 }
 //-----------------------

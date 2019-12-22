@@ -354,7 +354,8 @@ async function CreateGIG_equ_Details(GIG_equ_Request, GIG_equ_Details) {
             step: 1,
             IsAmvaly: res.IsAmvaly,
             Role: Confirm[0].Role,
-            ConfirmIdId: Confirm[0].Id
+            ConfirmIdId: Confirm[0].Id,
+            SendNotification:true
         }).then(function (item) {
             //console.log(item);
             resolve(item);

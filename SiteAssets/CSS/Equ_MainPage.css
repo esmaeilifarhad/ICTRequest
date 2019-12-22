@@ -1,0 +1,186 @@
+
+img:hover {
+  animation: shake 0.5s;
+  animation-iteration-count: infinite;
+}
+
+.myShake {
+  animation: shake 10s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.carousel-inner img{
+border-radius: 26px;
+}
+#WebPartWPQ2_ChromeTitle,#pageTitle{
+  display: none;
+}
+#MSOZoneCell_WebPartWPQ2{
+/* background: url(https://portal.golrang.com/PublishingImages/Feature-Hub-Copy-compressor.png)no-repeat ; */
+
+background: url(https://portal.golrang.com/PublishingImages/ima232ges.jpg) ;
+
+
+
+
+}
+.ms-webpart-chrome-fullWidth{
+  background-color: none!important;
+}
+/* #WebPartWPQ2{
+background-image: linear-gradient(to right,#291c1c, #30bae4);
+} */
+/* .myLinks{
+  background-image: linear-gradient(to right,#dee5ee, #30bae4);
+} */
+.navbar-brand{
+  float: right;
+}
+.carousel-inner img{
+  max-height: 350px;
+}
+/* .mainPage  {
+  background-image: url("https://portal.golrang.com/PublishingImages/ICTRequest.png");
+  background-color: #cccccc;
+  opacity: 0.4;
+ } */
+
+.k-widget 
+{
+  z-index:150 !important
+}
+.styleLog{
+  background-image: linear-gradient(to bottom right, #f7f4f4, #940909);
+  border-radius: 29px;
+}
+.styleDecision{
+  background-image: linear-gradient(to bottom right, #d8ffff, #0072c6);
+  border-radius: 29px;
+}
+ .k-window-titlebar ,.k-header {
+  text-align: center;
+} 
+
+#FolderLog th,td{
+  text-align: right
+}
+#FolderLogICT th,td{
+  text-align: right
+}
+#FolderLogJAM th,td{
+  text-align: right
+}
+#FolderLogAML th,td{
+  text-align: right
+}
+#FolderLogREQ th,td{
+  text-align: right
+}
+ #tableres2 th {
+    text-align: right
+}
+
+.onvan{
+    font-weight: bold;
+}
+a.navbar-brand {
+  padding-left: 20px;
+}
+#showLinks div a :hover {
+ color: blue;
+
+}
+/* #WebPartWPQ2{
+  background-color: black;
+} */
+h3 {
+    color: white;
+    text-shadow: 1px 1px 2px rgb(233, 214, 45), 0 0 25px rgb(115, 115, 212), 0 0 5px rgb(64, 219, 134);
+  }
+
+ .k-window-titlebar span {
+
+   /* background-color:white;*/
+    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration:3s; /* Safari 4.0 - 8.0 */
+    animation-name: example;
+    animation-duration: 3s;
+  }
+  
+  /* Safari 4.0 - 8.0 */
+  @-webkit-keyframes example {
+    from {background-color: white;}
+    to {background-color: gray;}
+  }
+  
+  /* Standard syntax */
+  @keyframes example {
+    from {background-color: white;}
+    to {background-color: gray;}
+  }
+  #message a{
+    font-weight: bolder;
+  color:blue;
+  }
+
+
+
+  .k-window-titlebar span {
+  position: relative;
+  -webkit-animation-name: k-window-titlebar; /* Safari 4.0 - 8.0 */
+  -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
+  -webkit-animation-delay: 2s; /* Safari 4.0 - 8.0 */
+  animation-name: k-window-titlebar;
+  animation-duration: 4s;
+  animation-delay: -2s;
+
+}
+
+  /* Safari 4.0 - 8.0 */
+  
+  @-webkit-keyframes k-window-titlebar {
+    0%   { right:0px; top:0px;}
+    25%  { right:200px; top:20px;}
+    50%  { right:300px; top:40px;}
+    75%  { right:400px; top:60px;}
+    100% { right:0px; top:0px;}
+  }
+  
+  /* Standard syntax */
+  @keyframes k-window-titlebar {
+    0%   { right:0px; top:0px;color:red}
+    25%  { right:200px; top:0px;color:blue}
+    50%  { right:300px; top:0px;}
+    75%  { right:600px; top:0px;}
+    100% { right:0px; top:0px;}
+  }
+  .moshakhast{
+    background-image: linear-gradient(to right, rgba(255,0,0,0), #9270e2);
+  }
+  .moshakhast tr td :hover{
+   color:gray;
+  }
+  #tableres{
+    background-color: beige;
+    background-image: linear-gradient(to bottom right, #a3bcf1, #f17356);
+  }
+  #tableres2{
+    background-color: beige;
+    background-image: linear-gradient(to bottom right, #d8ffff, #0072c6);
+
+  }
+  /*--------------------------------------------------------*/
