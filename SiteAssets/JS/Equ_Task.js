@@ -503,6 +503,7 @@ async function save() {
 
               
                     if (res.value == true) {
+                        $.LoadingOverlay("show");
                         varStep = Detail.step + 1
                     }
                     else {
@@ -568,8 +569,7 @@ async function save() {
         //-----------------------------**************update Detail and create Log
 
         var DetailRes = await update_Details(_CurrentIdDetail, result, description, varStep, Detail, Confirm, EstelamGheymat, PlackNo, BuyStock, StatusWF, DarkhastSN2, nextConfirm)
-       console.log(DetailRes)
-        debugger
+    
         Swal.fire({
             position: 'top-end',
             icon: 'success',
@@ -624,7 +624,7 @@ async function Show(id) {
 
     var Policy = await Get_Policy(Detail)
     var GenLookUp = await Get_GenLookUpById(1)
-
+debugger
     if (confirm[0].Role == "ICT") {
         //------------------------update exchange rate
         //  var ER = await exchangeRate();

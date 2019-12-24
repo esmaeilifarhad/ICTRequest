@@ -1,3 +1,12 @@
+
+
+#MSOZoneCell_WebPartWPQ2{
+  /* background: url(https://portal.golrang.com/PublishingImages/Feature-Hub-Copy-compressor.png) ;  */
+ /* background: url(https://portal.golrang.com/PublishingImages/ima232ges.jpg) ; */
+ /* background: url(https://portal.golrang.com/PublishingImages/Black-Background-Images.jpg)no-repeat ;  */
+ background: url(https://portal.golrang.com/PublishingImages/630548.jpg) ; 
+ }
+
 #WebPartWPQ2_ChromeTitle,#pageTitle{
   display: none;
 }
@@ -39,9 +48,9 @@
 .onvan{
     font-weight: bold;
 }
-#WebPartWPQ2{
+/* #WebPartWPQ2{
   background-color: black;
-}
+} */
 h3 {
     color: white;
     text-shadow: 1px 1px 2px rgb(233, 214, 45), 0 0 25px rgb(115, 115, 212), 0 0 5px rgb(64, 219, 134);

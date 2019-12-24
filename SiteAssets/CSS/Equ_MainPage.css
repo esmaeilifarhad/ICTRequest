@@ -1,3 +1,77 @@
+/*
+https://freefrontend.com/css-text-effects/
+*/
+/* @import "compass/css3";
+
+@import url(https://fonts.googleapis.com/css?family=Finger+Paint); */
+
+
+
+.smokyText span {
+  display: inline-block;
+  text-shadow: 0 0 0 whitesmoke;
+  animation: smoky 10s 4s both;
+  color: yellow;
+  padding-left: 4px;
+}
+
+.smokyText span:nth-child(even){
+  animation-name: smoky-mirror;
+   /* animation-iteration-count: infinite;  */
+}
+
+@keyframes smoky {
+  60% {
+    text-shadow: 0 0 40px whitesmoke;
+  }
+  to {
+    transform:
+      translate3d(15rem,-8rem,0)
+      rotate(-40deg)
+      skewX(70deg)
+      scale(1.5);
+    text-shadow: 0 0 20px whitesmoke;
+    opacity: 0;
+  }
+}
+
+@keyframes smoky-mirror {
+  60% {
+    text-shadow: 0 0 40px whitesmoke; }
+  to {
+    transform:
+      translate3d(18rem,-8rem,0)
+      rotate(-40deg) 
+      skewX(-70deg)
+      scale(2);
+     text-shadow: 0 0 20px whitesmoke;
+    opacity: 0;
+  }
+}
+
+
+
+
+.text {
+  font-weight: 700;
+  color: #f5f5f5;
+  text-shadow: 1px 1px 1px #2e2e2e,
+   1px 2px 1px #2e2e2e,
+   1px 3px 1px #2e2e2e,
+    1px 4px 1px #2e2e2e,
+    1px 5px 1px #2e2e2e,
+    1px 6px 1px #2e2e2e,
+     1px 7px 1px #2e2e2e,
+      1px 8px 1px #f1f1f1,
+      1px 9px 1px #f1f1f1,
+     1px 10px 1px #919191,
+      1px 18px 6px rgba(16,16,16,0.4),
+       1px 22px 10px rgba(16,16,16,0.2),
+      1px 25px 35px rgba(16,16,16,0.2),
+       1px 30px 60px rgba(16,16,16,0.4);
+}
+
+
 
 img:hover {
   animation: shake 0.5s;
@@ -31,12 +105,7 @@ border-radius: 26px;
 }
 #MSOZoneCell_WebPartWPQ2{
 /* background: url(https://portal.golrang.com/PublishingImages/Feature-Hub-Copy-compressor.png)no-repeat ; */
-
 background: url(https://portal.golrang.com/PublishingImages/ima232ges.jpg) ;
-
-
-
-
 }
 .ms-webpart-chrome-fullWidth{
   background-color: none!important;

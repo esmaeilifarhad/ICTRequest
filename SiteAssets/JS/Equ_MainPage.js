@@ -43,7 +43,7 @@ $(document).ready(function () {
 
     const m = moment();
     today = moment().format('jYYYY/jM/jD');//Today
-    $(".today").append("<span>تاریخ امروز : </span><span>   "+today+"</span>")
+    $(".today").append("<span>تاریخ امروز : </span><span>   " + today + "</span>")
 
     var todayarray = today.split("/")
     mounth = (parseInt(todayarray[1]) <= 9) ? "0" + parseInt(todayarray[1]) : parseInt(todayarray[1])
@@ -63,7 +63,7 @@ async function showCartabl() {
     //---------------------
     var Links = await Get_Links();
     var myRequest = await Get_Details()
-    //-------------------------
+    //----------------------------------------
 
     var Confirm = await Get_Confirm();
     _spPageContextInfo.userId
@@ -106,10 +106,44 @@ async function showCartabl() {
     $("#showLinks .navbar").append(MyLinks);
     //console.log(MyLinks)
 
+    var DetailAll = await Get_DetailAll()
+    arrayReport = []
+    arrayReport = ReporCompanyCount(DetailAll)
+/*
+    var DetailAll = await Get_DetailAll()
+
+    var types = {};
+    var lastDate = '';
+
+    for (var i = 0; i < DetailAll.length; i++) {
+
+        var groupName = DetailAll[i].MasterId.CName;
+
+        //lastDate = groupName;
+        if (!types[groupName]) {
+            types[groupName] = [];
+        }
+
+        types[groupName].push({ Title: DetailAll[i].Title, NameKala: DetailAll[i].NameKala, StatusWF: DetailAll[i].StatusWF });
+
+    }
+
+    myArray = [];
+    for (var groupName in types) {
+
+        myArray.push({ DepName: groupName, types: types[groupName] });
+    }
+   */
 
 
+    for (let index = 0; index < arrayReport.length; index++) {
 
+        $(".smokyText").append("<p><span> تعداد  </span><span> سفارش </span><span>" + arrayReport[index].group + "</span><span>" + arrayReport[index].types.length + "</span></p>")
+ 
 
+    }
+    debugger
+   // $(".smokyText").append("<span>تعداد</span><span>درخواست های</span><span>ثبت</span><span>شده</span><span>در</span><span>سیستم</span><span> : " + DetailAll + "</span>")
 }
 //-------------------------------------------------------CRUD
 
@@ -210,9 +244,53 @@ function Get_DetailsTask(usersInConfirm) {
             });
     });
 }
+function Get_DetailAll() {
+
+    return new Promise(resolve => {
+        $pnp.sp.web.lists.
+            getByTitle("GIG_equ_Details").
+            items.select("ConfirmId/Title,MasterId/CName,MasterId/Id,MasterId/Semat,MasterId/PersonelId,DarkhastSN,MasterId/Title,MasterId/CID,MasterId/PersonelId,MasterId/DepName,MasterId/RequestDate,Id,BuyStock,Title,PlackNo,step,NameKalaValue,Tozihat,StatusWF,NameKala,MasterId/RR_ID").
+            expand("MasterId,ConfirmId").
+            // filter("(StatusWF eq 'درگردش') and (((MasterId/DepId eq 289) and (step eq 1)) or ((MasterId/DepId eq null) and (step eq 2)) or ((MasterId/DepId eq null) and (step eq 3)) or ((MasterId/DepId eq null) and (step eq 4)) or ((MasterId/DepId eq null) and (step eq 5)) or ((MasterId/DepId eq null) and (step eq 6)))")
+            //filter("MasterId/PersonelId eq " + CurrentPID + "").
+            get().
+            then(function (items) {
+                resolve(items)
+                /*
+                                if (items.length == 0) {
+                                    resolve(0)
+                                }
+                                else {
+                                    resolve(items.length);
+                                }
+                                */
+            });
+
+
+    });
+}
 
 //-----------------------------
+function ReporCompanyCount(DetailAll) {
+    var types = {};
+    for (var i = 0; i < DetailAll.length; i++) {
+        
+        var groupName = DetailAll[i].MasterId.CName;
 
+        if (!types[groupName]) {
+            types[groupName] = [];
+        }
+
+        types[groupName].push({ NameKala: splitString(DetailAll[i].NameKala)[1] });
+    }
+
+    myArray = [];
+    for (var groupName in types) {
+        myArray.push({ group: groupName, types: types[groupName] });
+    }
+    
+    return myArray
+}
 //----------------------------
 
 

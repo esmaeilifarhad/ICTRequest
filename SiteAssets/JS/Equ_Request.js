@@ -328,7 +328,8 @@ function CreateGIG_equ_Request() {
             UserId: person.userid,
             DepName: person.Depname,
             DepId: person.DepId,
-            CID: CurrentCID
+            CID: CurrentCID,
+            CName:sessionStorage.getItem("CName")
             // IsFinish: "درگردش"
             // confirmUserId: 641/*MTH_Confirm => group
         }).then(function (item) {
