@@ -90,31 +90,26 @@ async function ShowReport() {
     //-----------------------------------
     arrayReport = []
     arrayReport = ReporTajmyCount(DetailAll)
-
     var tbl = "<h1>تعداد سفارش بر اساس شرکت</h1>"
     tbl += "<ol>"
     for (var groupName in arrayReport) {
-        tbl += "<li>" + groupName + "</li>"
+        debugger
+        tbl += "<li><span>" + groupName + "</span><span class='countRequestInCompany'>("+arrayReport[groupName].length+")</span></li>" 
         tbl += "<ol>"
-        for (let index = 0; index < arrayReport[groupName].length; index++) {
-            
-            tbl += "<li><span>" + arrayReport[groupName][index].DepName + "</span>" + "<span class='showdetail' onclick=ShowToggle2('"+ arrayReport[groupName][index].dep[0].Id+"')>+</span></li>"
-
+        for (let index = 0; index < arrayReport[groupName].length; index++) {        
+            tbl += "<li><span>" + arrayReport[groupName][index].DepName + "</span><span> ("+arrayReport[groupName][index].dep.length+") </span>" + "<span class='showdetail' onclick=ShowToggle2('"+ arrayReport[groupName][index].dep[0].Id+"')>+</span></li>"
             //--------
             tbl += "<ul class='s" + arrayReport[groupName][index].dep[0].Id + "' hidden>"
             for (let index2 = 0; index2 < arrayReport[groupName][index].dep.length; index2++) {
                 tbl += "<li>"
                 tbl += arrayReport[groupName][index].dep[index2].PersonelName + "  :  " + arrayReport[groupName][index].dep[index2].NameKala
                 tbl += "</li>"
-
             }
             tbl += "</ul>"
         }
         tbl += "</ol>"
-
-
-
     }
+
     tbl += "</ol>"
     $("#5").append(tbl)
 

@@ -34,6 +34,13 @@ a.tabs-controls__link {
   /* background: url(https://portal.golrang.com/PublishingImages/Feature-Hub-Copy-compressor.png)no-repeat ; */
   background: url(https://portal.golrang.com/PublishingImages/ima232ges.jpg) ;
   }
+  #WebPartWPQ2_ChromeTitle,#pageTitle{
+    display: none;
+  }
+  #siteactiontd,#fullscreenmodebox {
+
+    display: none !important;
+}
 /* body {
   background: #e3b23c;
   font-family: "Open Sans", sans-serif;

@@ -14,6 +14,7 @@ var _usersInConfirm = []
 var _MojoodiAnbarICT = []
 var _MojoodyAnbarInPap = 0;
 var _MojoodyAnbarInPortal = 0;
+var portalAddress = _spPageContextInfo.webAbsoluteUrl;
 /*
 List Name :
 
@@ -52,7 +53,7 @@ $(document).ready(function () {
     today = year + "" + mounth + "" + rooz
 
 
-
+    test();
     showCartabl();
 
 });
@@ -109,41 +110,41 @@ async function showCartabl() {
     var DetailAll = await Get_DetailAll()
     arrayReport = []
     arrayReport = ReporCompanyCount(DetailAll)
-/*
-    var DetailAll = await Get_DetailAll()
-
-    var types = {};
-    var lastDate = '';
-
-    for (var i = 0; i < DetailAll.length; i++) {
-
-        var groupName = DetailAll[i].MasterId.CName;
-
-        //lastDate = groupName;
-        if (!types[groupName]) {
-            types[groupName] = [];
+    /*
+        var DetailAll = await Get_DetailAll()
+    
+        var types = {};
+        var lastDate = '';
+    
+        for (var i = 0; i < DetailAll.length; i++) {
+    
+            var groupName = DetailAll[i].MasterId.CName;
+    
+            //lastDate = groupName;
+            if (!types[groupName]) {
+                types[groupName] = [];
+            }
+    
+            types[groupName].push({ Title: DetailAll[i].Title, NameKala: DetailAll[i].NameKala, StatusWF: DetailAll[i].StatusWF });
+    
         }
-
-        types[groupName].push({ Title: DetailAll[i].Title, NameKala: DetailAll[i].NameKala, StatusWF: DetailAll[i].StatusWF });
-
-    }
-
-    myArray = [];
-    for (var groupName in types) {
-
-        myArray.push({ DepName: groupName, types: types[groupName] });
-    }
-   */
+    
+        myArray = [];
+        for (var groupName in types) {
+    
+            myArray.push({ DepName: groupName, types: types[groupName] });
+        }
+       */
 
 
     for (let index = 0; index < arrayReport.length; index++) {
 
         $(".smokyText").append("<p><span> تعداد  </span><span> سفارش </span><span>" + arrayReport[index].group + "</span><span>" + arrayReport[index].types.length + "</span></p>")
- 
+
 
     }
-    debugger
-   // $(".smokyText").append("<span>تعداد</span><span>درخواست های</span><span>ثبت</span><span>شده</span><span>در</span><span>سیستم</span><span> : " + DetailAll + "</span>")
+
+    // $(".smokyText").append("<span>تعداد</span><span>درخواست های</span><span>ثبت</span><span>شده</span><span>در</span><span>سیستم</span><span> : " + DetailAll + "</span>")
 }
 //-------------------------------------------------------CRUD
 
@@ -274,7 +275,7 @@ function Get_DetailAll() {
 function ReporCompanyCount(DetailAll) {
     var types = {};
     for (var i = 0; i < DetailAll.length; i++) {
-        
+
         var groupName = DetailAll[i].MasterId.CName;
 
         if (!types[groupName]) {
@@ -288,16 +289,76 @@ function ReporCompanyCount(DetailAll) {
     for (var groupName in types) {
         myArray.push({ group: groupName, types: types[groupName] });
     }
-    
+
     return myArray
 }
-//----------------------------
-
-
-
-//------------------------Modal Dialog Form
 
 //----------------------------------------------------web services
+
+
+function test() {
+    var _DetailsObjects = []
+    var xx = "https://portal.golrang.com"
+
+    var url = xx + "/_api/web/siteusers";
+    $.getJSON(url)
+        .then(function (data) {
+
+            // console.log(data)
+            for (let index = 0; index < data.value.length; index++) {
+                debugger
+                var res= _DetailsObjects.find(x => x.LoginName == data.value[index].LoginName);
+                if(res==undefined)
+                _DetailsObjects.push({ Title: data.value[index].Title,LoginName:data.value[index].LoginName,Id:data.value[index].Id,Email:data.value[index].Email ,SiteCollectionName:"Root"})
+                // console.log(data.value[index].Title);
+
+            }
+        });
+
+        xx = "https://portal.golrang.com/giglegal"
+        var url = xx + "/_api/web/siteusers";
+        $.getJSON(url)
+            .then(function (data) {
+    
+                // console.log(data)
+                for (let index = 0; index < data.value.length; index++) {
+                    debugger
+                    var res= _DetailsObjects.find(x => x.LoginName == data.value[index].LoginName);
+                    if(res==undefined)
+                    _DetailsObjects.push({ Title: data.value[index].Title,LoginName:data.value[index].LoginName,Id:data.value[index].Id,Email:data.value[index].Email,SiteCollectionName:"giglegal" })
+                    // console.log(data.value[index].Title);
+    
+                }
+            });
+
+
+    console.log(_DetailsObjects.sort())
+
+}
+
+function getUserInfo() {
+
+    // Get the people picker object from the page.
+    var peoplePicker = this.SPClientPeoplePicker.SPClientPeoplePickerDict.peoplePickerDiv_TopSpan;
+
+    // Get information about all users.
+    var users = peoplePicker.GetAllUserInfo();
+    var userInfo = '';
+    for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+        for (var userProperty in user) {
+            userInfo += userProperty + ':  ' + user[userProperty] + '<br>';
+        }
+    }
+    $('#resolvedUsers').html(userInfo);
+
+    // Get user keys.
+    var keys = peoplePicker.GetAllUserKeys();
+    $('#userKeys').html(keys);
+
+    // Get the first user's ID by using the login name.
+    getUserId(users[0].Key);
+}
 
 //---------------------------------------------------------Utility
 function calDayOfWeek(date) {

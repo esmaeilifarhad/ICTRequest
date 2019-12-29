@@ -624,7 +624,7 @@ async function Show(id) {
 
     var Policy = await Get_Policy(Detail)
     var GenLookUp = await Get_GenLookUpById(1)
-debugger
+
     if (confirm[0].Role == "ICT") {
         //------------------------update exchange rate
         //  var ER = await exchangeRate();
@@ -647,7 +647,9 @@ debugger
             _Mojoodi_AnbarICT = parseInt(res.mojoodi)
             _MojoodyAnbarInPap = parseInt(res.mojoodi)
         }
-
+        
+        var All_AmvalEnteghalNayafte = await serviceShowAmvalPersonel(Detail.MasterId.CID, Detail.MasterId.PersonelId);
+        debugger
     }
     //-----------------------------------------------create log strart
     var table = "<table class='table'>"
@@ -728,11 +730,12 @@ debugger
         showWindowsICT()
     }
     else if (confirm[0].Role == "JAM") {
-        debugger
+        
         var ShowAmvalPersonel = await serviceShowAmvalPersonel(Detail.MasterId.CID, Detail.MasterId.PersonelId);
         if (Detail.IsAmvaly == 1) {
             var AmvalPersonelSelect = "<select id='selectOptionAmval'>"
             // AmvalPersonelSelect += "<option value='1'>این کالا اموالی نمیباشد</option>"
+            debugger
             for (let index = 0; index < ShowAmvalPersonel.length; index++) {
 
                 AmvalPersonelSelect += "<option value=" + ShowAmvalPersonel[index].PlackNo + ">" + ShowAmvalPersonel[index].MoshakhasatKala + " - " + ShowAmvalPersonel[index].PlackNo + "</option>"
@@ -940,6 +943,7 @@ function serviceShowAmvalPersonel(CID, PID) {
             data: JSON.stringify(request),
             //processData: false,
             success: function (data) {
+                
                 resolve(data);
 
             },
